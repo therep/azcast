@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Arizona Casting Connection</title>
+<meta name="Title" content="Arizona Casting Connection" />
+<meta name="Description" content="Arizona Casting Connection" />
+<meta name="Keywords" content="Arizona Casting Connection" />
+<meta name="robots" content="index,follow" />
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+<!-- release version -->
+<!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>-->
+<!-- development version only -->
+<script type="text/javascript" src="jquery-1.8.2.js"></script>
+
+<style type="text/css">
+
+
+</style>
+
+
+<script type="text/javascript">
+var g_cat_info = "";
+var temp1 = 0;
+var temp2 = 0;
+$(document).ready(function()
+  {
+   $("#btn1").click(function(){
+	temp1 -= 978; //!! are px default??
+    $("#video_cats_scroll").animate({left: temp1});
+  });
+  $("#btn2").click(function(){
+	temp1 += 978;
+    $("#video_cats_scroll").animate({left: temp1});
+  });
+  $("#btn3").click(function(){
+    $("#video_cats_scroll").animate({width: "100%"});
+  });  
+    //$("#video_cats_scroll").animate({width: "200%"});  
+	
+  $("#btn4").click(function(){
+	temp2 -= 75;
+    $("#video_select_scroll").animate({top: temp2});
+  });
+  $("#btn5").click(function(){
+	temp2 += 75;
+    $("#video_select_scroll").animate({top: temp2});
+  });  
+});
+
+var video_cats = new Array();
+video_cats[0] = "this is cat 1";
+video_cats[1] = "cat 2";
+video_cats[2] = "cat 3";
+video_cats[3] = "cat 4";
+video_cats[4] = "cat 5";
+
+function add(categories)
+{
+	
+	var division=document.getElementById("video_cats_scroll");
+	var ul=document.getElementById("video_cat_list");
+	for (i=0; i < categories.length; i++)
+	{
+		var li =document.createElement('li');
+		var a =document.createElement('a');
+		a.href = "http://www.arizonacastingconnection.com/bio.html";
+		a.innerHTML = categories[i];
+		li.appendChild(a);
+		ul.appendChild(li);
+	}
+	
+	console.log(ul.getElementsByTagName('li').length);
+}
+
+function LoadCatInfo()
+{
+	var xmlhttp;
+	if (window.XMLHttpRequest)
+	{// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	}
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.onreadystatechange=function()
+	{
+		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+			g_cat_info = xmlhttp.responseText;
+			console.log(g_cat_info);
+			//document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
+		}
+	}
+	
+	xmlhttp.open("GET","cat_info.txt",true);
+	xmlhttp.send();
+}
+</script>
+
+</head>
+
+<body>
+<div id="main_div">
+
+<div id="title_div">
+<p id="title_text">Arizona Casting Connection</p>
+<a id="home_link" href="http://www.arizonacastingconnection.com/home.html">Home</a>
+</div>
+
+<div id="content_div">
+<button id="btn1">left</button>
+<button id="btn2">right</button>
+<button id="btn3">set</button>
+<button onclick="add(video_cats)">add</button>
+<button onclick="LoadCatInfo()">load</button>
+<button id="btn4">up</button>
+<button id="btn5">down</button>
+<ul id="menu_list">
+	<li><a href="http://www.arizonacastingconnection.com/bio.html" class="current_link">BIO</a></li>
+	<li><a href="http://www.arizonacastingconnection.com/spots.html">SPOTS</a></li>
+	<li><a href="http://www.arizonacastingconnection.com/services.html">SERVICES</a></li>
+	<li><a href="http://www.arizonacastingconnection.com/credits.html">CREDITS</a></li>
+	<li><a href="http://www.arizonacastingconnection.com/actors-models.html">ACTORS/MODELS</a></li>
+	<li><a href="http://www.arizonacastingconnection.com/contact-afiliates.html">CONTACT/AFFILIATES</a></li>
+	<br>
+	<li><a href="http://www.arizonacastingconnection.com/projects.html">PROJECT LOG-IN</a></li>
+</ul>
+
+<div id="info_div">
+    <img id="home_img" src="http://www.arizonacastingconnection.com/images/homepage-left.jpg"/>
+
+    <p id="home_text">
+      <font color="#3cbaeb" size="5">Need Talent?</font><br><br>
+      Need "Real People or Real Customers"?<br>
+        A Fresh Face to speak a mouthful of dialogue?<br>
+        or is an alluring model on your list?<br>
+        Principles or extras?<br>
+        <br>
+        Broadcast, Industrial, or Print.<br>
+        SAG or Non Union.<br>
+        <br>
+        Your production relies on finding the best talent for<br>
+        the part. <font color="#3cbaeb" size="+1">ACC</font> is your connection to that vital talent<br>
+        pool. No more "what if" Factor. We'll put you with<br>
+        the best talent in Arizona.
+    </p>
+  </div>
+</div>
+
+
+	<div id="video_cats_div">
+		<div id="video_cats_scroll">
+		
+
+
+		<ul id="video_cat_list" class="video_cat_class">
+		<!--<li class="video_cat_item">cat 1</li>
+		<li class="video_cat_item">cat 1</li>
+		<li class="video_cat_item">cat 1</li>
+		-->
+<!--		
+		<li><p class="video_cat_text">cat 1</p></li>
+		<li><p class="video_cat_text">cat 2</p></li>
+-->
+		
+		
+		
+		<!--
+		<li>cat 2</li>
+			<li>cat 3</li>
+		<li>cat 4</li>
+				<li>cat 5</li>
+		<li>cat 6</li>
+		-->
+	  </ul>
+		</div>
+	</div>
+	  
+	  
+	<div id="video_select_div">
+	
+		<div id="video_select_scroll">
+		
+
+
+		<ul class="video_select_class">
+
+		<li><a href="video/spots/FLF New Classic.html" target="videobox" title="Fazoli's"><img src="images/FLF Classic Sampler-moped-couple-120X90.jpg" alt="Fazoli's" /></a></li>
+        <li><a href="video/spots/Justin Kelly.html" target="videobox" title="Desert Schools Federal Credit Union"><img src="images/Justin & Kelly_HD-DogBottle-120X90.jpg" alt="Desert Schools Federal Credit Union" /></a></li>
+        <li><a href="video/spots/Ak Chin.html" target="videobox" title="Ak Chin"><img src="images/Ak Chin-Norm-120X90.jpg" alt="Ak Chin" /></a></li>
+        <li><a href="video/spots/prop200.html" target="videobox" title="Proposition 200"><img src="images/Prop200_JustTheFacts-120X90.jpg" alt="Proposition 200" /></a></li>
+        <li><a href="video/spots/FLF Pizzettis.html" target="videobox" title="Fazoli's"><img src="images/FLF Pizzettis-3teens-120X90.jpg" alt="Fazoli's" /></a></li>
+	  </ul>
+	  <ul class="video_select_class">
+
+		<li><a href="video/spots/FLF New Classic.html" target="videobox" title="Fazoli's"><img src="images/FLF Classic Sampler-moped-couple-120X90.jpg" alt="Fazoli's" /></a></li>
+        <li><a href="video/spots/Justin Kelly.html" target="videobox" title="Desert Schools Federal Credit Union"><img src="images/Justin & Kelly_HD-DogBottle-120X90.jpg" alt="Desert Schools Federal Credit Union" /></a></li>
+        <li><a href="video/spots/Ak Chin.html" target="videobox" title="Ak Chin"><img src="images/Ak Chin-Norm-120X90.jpg" alt="Ak Chin" /></a></li>
+        <li><a href="video/spots/prop200.html" target="videobox" title="Proposition 200"><img src="images/Prop200_JustTheFacts-120X90.jpg" alt="Proposition 200" /></a></li>
+        <li><a href="video/spots/FLF Pizzettis.html" target="videobox" title="Fazoli's"><img src="images/FLF Pizzettis-3teens-120X90.jpg" alt="Fazoli's" /></a></li>
+	  </ul>
+	  
+		</div>
+	</div>	  
+</div>
+
+
+
+
+</body>
+</html>

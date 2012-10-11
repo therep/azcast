@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Arizona Casting Connection</title>
+<meta name="Title" content="Arizona Casting Connection" />
+<meta name="Description" content="Arizona Casting Connection" />
+<meta name="Keywords" content="Arizona Casting Connection" />
+<meta name="robots" content="index,follow" />
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+<!-- release version -->
+<!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>-->
+<!-- development version only -->
+<script type="text/javascript" src="lib/jquery-1.8.2.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+
+  
+
+<style type="text/css">
+
+
+</style>
+
+
+<script type="text/javascript">
+<!--
+function startUpload(){
+      document.getElementById('f1_upload_process').style.visibility = 'visible';
+      document.getElementById('f1_upload_form').style.visibility = 'hidden';
+      return true;
+}
+
+function stopUpload(success){
+      var result = '';
+      if (success == 1){
+         result = '<span class="msg">The file was uploaded successfully!<\/span><br/><br/>';
+      }
+      else {
+         result = '<span class="emsg">There was an error during file upload!<\/span><br/><br/>';
+      }
+      document.getElementById('f1_upload_process').style.visibility = 'hidden';
+      document.getElementById('f1_upload_form').innerHTML = result + '<label>File: <input name="myfile" type="file" size="30" /><\/label><label><input type="submit" name="submitBtn" class="sbtn" value="Upload" /><\/label>';
+      document.getElementById('f1_upload_form').style.visibility = 'visible';      
+      return true;   
+}
+//-->
+
+$(document).ready(function() 
+{
+   $('#video_list li').click(function(e) 
+   { 
+		ClickVideo($(this));
+		console.log("hello");
+		//$(this).attr('id').hide();
+		//$("#video_list").css("background-color", "#202020");
+		//$(this).css("background-color", "red");
+				
+    
+   });
+});
+
+$(document).ready(function()
+  {
+   $("#btn1").click(function(){
+	console.log("hello");
+  });
+ 
+  $("#videos_div").clone().appendTo("#fragment-2");
+});
+
+$(document).ready(function()
+  {
+$('#cats_list > li a').click(function() {
+        $(this).parent().find('ul').toggle();
+		
+		//console.log("hello");
+    });
+});
+
+$(document).ready(function() {
+    $("#tabs").tabs();
+  });
+  
+function ClickVideo(li)
+{
+	var ul=document.getElementById("video_list");
+	var li_elements = ul.getElementsByTagName('li');
+	
+	for (i=0; i < li_elements.length; i++)
+	{
+		li_elements[i].style.backgroundColor = "#e6dace";
+	}
+
+	li.css("background-color", "#b8aea5");
+}
+
+
+  
+</script>   
+</head>
+
+<body>
+       
+
+		 <button id="btn1">butt</button>
+		 
+			
+			
+			
+			
+<div id="tabs">
+    <ul>
+        <li><a href="#fragment-1"><span>Video Info</span></a></li>
+        <li><a href="#fragment-2"><span>Categories</span></a></li>
+    </ul>
+    <div id="fragment-1">
+        <div id="videos_div">
+            <div id="upload_div">
+                <form action="upload.php" method="post" enctype="multipart/form-data" target="upload_target" onsubmit="startUpload();" >
+                    <p id="f1_upload_process">Loading...<br/><img src="loader.gif" /><br/></p>
+                    <p id="f1_upload_form" align="center"><br/>
+                        <label>File:  
+                              <input name="myfile" type="file" size="30" />
+                         </label>
+                         <label>
+                             <input type="submit" name="submitBtn" class="sbtn" value="Upload" />
+                         </label>
+                    </p>
+                     <iframe id="upload_target" name="upload_target" src="#" style="width:0;height:0;border:0px solid #fff;"></iframe>
+                 </form>
+             </div>
+			 
+			<div id="video_list_div">
+				<ul id="video_list">
+					<span id="video_name_hdr">Name</span><span id="video_file_hdr">File</span>
+					<li><span class="name">video 1</span><span class="file">vid1.fav</span></li>
+					<li><span class="name">video 2</span><span class="file">vid2.fav</span></li>
+					<li><span class="name">video 3</span><span class="file">vid3.fav</span></li>
+					<li><span class="name">video 4</span><span class="file">vid4.fav</span></li>
+				</ul>
+			</div>
+        </div>
+			
+		<div id="video_info_div">
+			
+			<label for="video_name">Video Name</label>
+			<input type="text" name="video_name"  value="txt"><br>
+			<label for="video_client">Client</label>
+			<input type="text" name="video_client" value="txt"><br>		
+			<label for="video_director">Director</label>
+			<input type="text" name="video_director"  value="txt"><br>
+			<label for="video_production">Production Co</label>
+			<input type="text" name="video_production"  value="txt"><br>
+			<label for="video_agency">Agency</label>
+			<input type="text" name="video_agency"  value="txt"><br>			
+		</div>
+		 
+    </div>
+    <div id="fragment-2">
+        
+	<div id="cats_list_div">
+			<ul id="cats_list">
+				<li>
+					<a>Category 1</a>
+					<ul class="cat_video_list">
+						<li>vid1.fav</li>  
+						<li>vid2.fav</li>  
+						<li>vid3.fav</li>  
+						<li>vid4.fav</li>            
+					</ul>                
+				</li>
+				<li>
+					<a>Category 2</a>
+					<ul>
+						<li>vid5.fav</li>  
+						<li>vid6.fav</li>      
+					</ul>                
+				</li>
+			</ul>
+			</div>
+				
+    </div>
+    
+</div>
+</body>   
+
+
+</html>
