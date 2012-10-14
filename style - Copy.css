@@ -226,7 +226,10 @@
 		#videos_div {
 			position: absolute;
 			width: 450px;
-			height: 475px;
+			height: 600px;
+			border: 1px;
+			border-color: #0011aa; 
+			border-style: solid;
 			padding: 0px;
 			margin: 0px;
 			
@@ -237,6 +240,9 @@
 			position: absolute;
 			width: 450px;
 			height: 75px;
+			border: 1px;
+			border-color: #0011aa; 
+			border-style: solid;
 			padding: 0px;
 			margin: 0px;
 		
@@ -247,22 +253,16 @@
 			left: 0px;
 			top: 80px;
 			width: 450px;
-			height: 400px;
 			padding: 0px;
 			margin: 0px;
+			border: 1px;
+			border-color: #0011aa; 
+			border-style: solid;
 			cursor: pointer;
+			
 		}
 		
 	
-	
-	
-	#video_list1, #video_list2 {	
-	overflow:scroll;
-	overflow-x:hidden;	
-	height: 400px;
-	
-	
-	}
 	
 		#video_list1 li, #video_list2 li {	
 			/*list-style-image: url('sqpurple.gif');*/
@@ -280,10 +280,9 @@
 		}
 				
 		.video_name_hdr {
-			position: absolute;
 			font-size: 15px;
 			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;		
-			left: 40px;
+			
 		}
 		
 		.video_file_hdr {
@@ -291,14 +290,13 @@
 			font-size: 15px;
 			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;		
 
-			left: 225px;
+			left: 150px;
 		}
 		
 		#video_list1 li .file, #video_list2 li .file {
-			margin-left: 100px;
+			position: absolute;
+			left: 150px;
 		}
-		
-		
 
 		
 		input:hover {background-color: #F0F0F0;}
@@ -308,62 +306,34 @@
 			position: absolute;
 			left: 500px;
 			top: 175px;
-			width: 270px;
+			width: 300px;
 			padding: 0px;
 			margin: 0px;
+			border: 1px;
+			border-color: #0011aa; 
+			border-style: solid;
 			font-size: 12px;
 			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;			
 			/*background-color: #e6dace;*/			
 			
 		}
-
-			.vid_info_input {
-				background-color: #e6e6e6;
-				border: none;
-			}
-			
-		#save_vid_info {
-			float: right;
-			color: red;
-			cursor: pointer;
-		
-		}
-		
-		#add_video_div {
-			position: absolute;
-			text-align: center;
-			left: 500px;
-			top: 340px;
-			padding: 0px;
-			margin: 0px;
-			color: red;
-
-			font-size: 12px;
-			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;					
-			cursor: pointer;
-		
-		}
-		
+	
 		#cats_list_div {
 			position: absolute;
-			left: 550px;
-			top: 300px;
-			width: 180px;
+			left: 500px;
+			top: 175px;
 			padding: 0px;
 			margin: 0px;
 			
-
+			border: 1px;
+			border-color: #0011aa; 
+			border-style: solid;
 			font-size: 12px;
 			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;					
 			cursor: pointer;
 			
 		}
 	
-		#add_cat_text {
-			float: right;
-			color: red;
-		}
-		
 		#cats_list {
 		list-style-type: none;
 		}
