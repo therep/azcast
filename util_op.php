@@ -1,6 +1,17 @@
 <?php
 session_start();
 
+
+//multiple row insert
+//http://stackoverflow.com/questions/779986/insert-multiple-rows-via-a-php-array-into-mysql
+/*
+$sql = array(); 
+foreach( $data as $row ) {
+    $sql[] = '("'.mysql_real_escape_string($row['text']).'", '.$row['category_id'].')';
+}
+mysql_query('INSERT INTO table (text, category) VALUES '.implode(',', $sql));
+*/
+
 if ($_POST['jquery_op'] == upload)
 {
 
@@ -10,9 +21,7 @@ if ($_POST['jquery_op'] == upload)
 		{
 			$name = $_FILES["azcast"]["name"][$key];
 			move_uploaded_file( $_FILES["azcast"]["tmp_name"][$key], "uploads/" . $name);
-		
-			pr("filename: " . $name);
-			
+
 			$data[] = $name;
 		}
     }
@@ -28,48 +37,17 @@ if ($_POST['jquery_op'] == upload)
    */
 	
 
-/* !! http://jquery.malsup.com/form/#file-upload
-The following PHP snippet shows how you can be sure to return content successfully
-<?php                 
-$xhr = $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'; 
-if (!$xhr)  
-    echo '<textarea>'; 
-?> 
- 
-// main content of response here 
-                 
-<?php 
-if (!$xhr)   
-    echo '</textarea>'; 
-?> 
-*/
 }
 
 if ($_POST['jquery_op'] == setsessiondata)
 {
-	//$_SESSION['sel_cat'] = $_POST['sel_cat'];
-	//$_SESSION['sel_vid'] = $_POST['sel_vid'];
-	//$_SESSION['sel_cat_vid'] = $_POST['sel_cat_vid'];
-	
 	$_SESSION = $_POST;
 
-	
-	//pr("name: ".$_SESSION['sel_cat']['name']." sess ".$_POST['jquery_op']);
-	
-	//pr("name: ".$cat);
 	return true;
 }
 
 if ($_GET['jquery_op'] == getsessiondata)
 {
-/*
-	$data['cat_sel'] = $_SESSION['cat_sel'];
-	$data['cat_sel'] = $_SESSION['cat_sel'];
-	$data[$_SESSION['sel_cat'] = $_POST['sel_cat'];
-	$data[$_SESSION['sel_vid'] = $_POST['sel_vid'];
-	$data[$_SESSION['sel_cat_vid'] = $_POST['sel_cat_vid'];
-	*/
-
 	$data = $_SESSION;
 
 	echo json_encode($data);
@@ -138,6 +116,7 @@ if ($_GET['jquery_op'] == deletecategory)
 			  ON  a.cat_id = b.cat_id
 			  WHERE b.name='".$_GET['name']."'"; 
 
+	//!! not error? just empty
 	if (!SQLSetData($query))
 	{
 		pr("Can't delete data : " . mysql_error());
@@ -159,12 +138,40 @@ if ($_GET['jquery_op'] == deletecategory)
 	return true;
 }
 
+if ($_POST['jquery_op'] == savevideo)
+{
+	$query = "INSERT INTO vids (filename) VALUES ('".$_POST['filename']."')";	 
+
+	if (!SQLSetData($query))
+	{
+		pr("Can't insert data : " . mysql_error());
+		echo json_encode("error");
+		return false;
+	}
+}
+
+if ($_POST['jquery_op'] == deletevideo)
+{
+	//delete video
+	$query = "DELETE FROM vids
+			  WHERE filename='".$_POST['filename']."'"; 
+
+	if (!SQLSetData($query))
+	{
+		pr("Can't delete data : " . mysql_error());
+		echo json_encode("error");
+		return false;
+	}
+	
+	return true;
+}
+
 if ($_GET['jquery_op'] == savevideodata)
 {
 	$query = "UPDATE vids
 			 SET name='".$_GET['name']."', client='".$_GET['client']."', director='".$_GET['director'].
 			 "', production_co='".$_GET['production']."', agency='".$_GET['agency'].
-			 "' WHERE video_id=".$_GET['id'];
+			 "' WHERE filename='".$_GET['filename']."'";
 			 
 	if (!SQLSetData($query))
 	{
@@ -275,7 +282,7 @@ function pr($data, $mode)
 
 	date_default_timezone_set('MST');
 	
-    fwrite($handle, date("Y m j, g:i a: ").$data);
+    fwrite($handle, date("Y m j, g:i:s a: ").$data);
 	fwrite($handle, "\n");
 	
     fclose($handle);

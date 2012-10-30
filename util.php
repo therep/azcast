@@ -55,30 +55,25 @@ function GetInfo()
 	global $g_cats;
 	global $g_vidcat;
 		
-		//!! what about alphabetizing?  numbering + css issues
-				
-	$g_vids = SQLGetData("SELECT * FROM vids"); 
+	$vids = SQLGetData("SELECT * FROM vids"); 
 
-	if (!$g_vids)
+	if ($vids)
 	{
-		pr("GetInfo: SQLGetData from vids failed");
-		return false;
+		$g_vids = $vids;
 	}
 
-	$g_cats = SQLGetData("SELECT * FROM cats"); 
+	$cats = SQLGetData("SELECT * FROM cats"); 
 
-	if (!$g_cats)
+	if ($cats)
 	{
-		pr("GetInfo: SQLGetData from cats failed");
-		return false;
+		$g_cats = $cats;
 	}
 	
-	$g_vidcat = SQLGetData("SELECT * FROM vidcat"); 
+	$vidcat = SQLGetData("SELECT * FROM vidcat"); 
 
-	if (!$g_vidcat)
+	if ($vidcat)
 	{
-		pr("GetInfo: SQLGetData from vidcat failed");
-		return false;
+		$g_vidcat = $vidcat;
 	}
 	
 	
@@ -108,16 +103,19 @@ function GetInfo()
 <script type="text/javascript">
 
 
-var video_cats = new Array();
-var video_files = new Array();
-var video_names = new Array();
-var g_sel_vid = new Object();
-var g_sel_cat = new Object();
-var g_sel_cat_vid = new Object(); 
+var g_sel_vid = {};
+var g_sel_cat = {};
+var g_sel_cat_vid = {}; 
  
-var g_vids = new Object();
+var g_vids = {};
 var g_cats = {};
 var g_vidcat = {};
+
+//!!
+var g_count1 = 0;
+var g_count2 = 0;
+var g_count3 = 0;
+var g_count4 = 0;
 
 main_util();
 
@@ -139,8 +137,8 @@ $(document).ready(function()
 	
 	
 	//click on video in main video list
-	$('#video_list1 li').click(function(e) 
-	{ 
+	$('#video_list1 li').live('click', function() { 
+
 		ClickVideo(this);
 
 		g_sel_vid['indx'] = $(this).index();
@@ -199,22 +197,6 @@ $(document).ready(function()
     });
   });
 
-    $("#btn3").click(function () 
-	{
-		SetSessionData();
-	});
-
-  	$("#btn4").click(function () 
-	{
-		DeleteCategory(g_sel_cat['name']);
-		/*
-		console.log("get session data");
-		//var li = $('#cats_list.li')[1];
-		$('.cat_video_list').eq(1).toggle(1);
-		//GetSessionData();
-		*/
-	});
-	
 	$('#save_vid_info').click(function() 
    { 
 		SaveVidInfo(g_sel_vid['indx']);
@@ -240,7 +222,7 @@ $(document).ready(function()
    { 
 		//!! mouse over pop up input box??
 		//console.log("lllllllllllllll");
-		DeleteCategory(g_sel_cat['name']);
+		DeleteCategory(g_sel_cat['indx'], g_sel_cat['name']);
 		
    });
    
@@ -248,7 +230,7 @@ $(document).ready(function()
    { 
 		//!! mouse over pop up input box??
 		//console.log("jjjjjjjjj");
-		DelCatVideo(g_sel_cat_vid['indx'], g_sel_vid['name']);
+		DelCatVideo(g_sel_cat, g_sel_cat_vid);
 		
    });
    
@@ -279,22 +261,205 @@ $(document).ready(function()
 		},
 		success: function(data)          
 		{
-			AddVideo(data);
+			for (i=0; i < data.length; i++)
+			{
+				AddVideo(data[i]);
+			}
 		}
-      
 	});
 	
-   
- 
+    $("#btn3").click(function () 
+	{
+		 
+		 g_count1 = 0;
+		UTSetVid();
+		
+	});
+
+  	$("#btn4").click(function () 
+	{
+		UTDeleteVid();
+	});
+	
+    $("#btn5").click(function () 
+	{
+		 g_count2 = 0;
+		UTCreateCat();
+		
+	});
+	
+    $("#btn6").click(function () 
+	{
+		 
+		UTDeleteCat();
+		
+	});
+
+    $("#btn7").click(function () 
+	{
+		 g_count3 = 0;
+		 g_count4 = 0;
+		UTCreateCatVid();
+		
+	});
+
+    $("#btn8").click(function () 
+	{
+		 
+		
+		
+	});
+	
 });
+
+function UTCreateCatVid()
+{
+
+	console.log("count3 " + g_count3 + " count4 " + g_count4 + " vids name " + g_vids[0].filename);
+	
+
+	if (g_count4 == g_vids.length)
+	{
+		g_count4 = 0;
+		g_count3++;
+	}
+	
+	if (g_count3 == g_cats.length)
+		return
+	
+		g_sel_cat['indx'] = g_count3;
+		g_sel_cat['name'] = g_cats[g_count3].name;
+		g_sel_vid['indx'] = g_count4;
+		g_sel_vid['name'] = g_vids[g_count4].filename;
+	
+		AddCatVideo(g_sel_cat, g_sel_vid);
+		
+		g_count4++;
+}
+
+function UTCreateCat()
+{
+	console.log("count " + g_count2);
+	
+	if (g_count2 > 1)
+		return;
+
+		var name = "cat " + g_count2;
+	
+		CreateCategory(name);
+}
+
+function UTDeleteCat()
+{
+	var len = g_cats.length;
+	
+	//for (i=0; i < g_vids.length; i++)
+	//{
+		g_sel_cat['indx'] = 0;
+		g_sel_cat['name'] = g_cats[0]['name'];
+		
+		console.log("cat " + g_sel_cat['name']);
+		DeleteCategory(g_sel_cat['indx'], g_sel_cat['name']);
+}
+
+function UTSetVid()
+{
+	console.log("count " + g_count1);
+	
+	if (g_count1 > 100)
+		return;
+
+		var filename = "video " + g_count1 + ".flv";
+	
+		AddVideo(filename);
+}
+
+function UTSetVidInfo()
+{
+
+	var i = g_count1;
+	
+		document.getElementById('video_name').value = "video " + i;
+		document.getElementById('video_client').value = "client " + i;
+		document.getElementById('video_director').value = "director " + i;
+		document.getElementById('video_production').value = "production " + i;
+		document.getElementById('video_agency').value = "agency " + i;
+		
+		var filename = "video " + i + ".flv";
+		
+		SaveVidInfo(0);
+}
+
+function UTDeleteVid()
+{
+	var len = g_vids.length;
+	
+	//for (i=0; i < g_vids.length; i++)
+	//{
+		g_sel_vid['indx'] = 0;
+		g_sel_vid['name'] = g_vids[0]['filename'];
+		
+		console.log("vid " + g_sel_vid['name']);
+		DeleteVideo(g_sel_vid['indx'], g_sel_vid['name']);
+	//}
+}
 
 function AddVideo(filename)
 {
-	console.log("file :" + filename[0] + "  " + filename[1]);
-	
-	//$('#video_list1').prepend("<li><span class='name'></span><span class='file'>" + filename + "</span></li>");
-	
-//"<li><span class='name'>{$g_vids[$key]['name']}</span><span class='file'>{$g_vids[$key]['filename']}</span></li>"	
+    $.ajax({     
+		type: "POST",
+		url: 'util_op.php',    
+		data: {jquery_op:'savevideo', filename:filename}, 
+		dataType: 'json',	 
+		
+		success: function(result)          
+		{
+			if (result != "error")
+			{
+				//add to top of html list
+				$('#video_list1').prepend("<li><span class='name'></span><span class='file'>" + filename + "</span></li>");
+				
+				//add to js objects
+				//g_vids[g_vids.length] = {};
+				//g_vids[g_vids.length-1].filename = filename;
+				
+				//add to top of list
+				g_vids.unshift({});
+				g_vids[0].filename = filename;
+				
+				//!!
+				UTSetVidInfo();
+				
+				//!!
+				//console.log("vid len" + g_vids[0]['filename']);
+			}
+		} 
+    });
+}
+
+function DeleteVideo(indx, name)
+{
+    $.ajax({     
+		type: "POST",
+		url: 'util_op.php',                  
+		data: {jquery_op:'deletevideo', filename:name},
+		dataType: 'json',
+		
+		success: function(result)          
+		{
+			if (result != "error")
+			{
+				//remove in html list 
+				$('#video_list1 li:eq('+indx+')').remove();
+				
+				//remove object 
+				g_vids.splice(indx, 1);
+				
+				//!!
+				UTDeleteVid();
+			}
+		} 
+    });
 }
 
 function ReloadPage()
@@ -321,8 +486,6 @@ function SetSessionData()
 
 function GetSessionData()
 {
-
-	//!! change to POST
 	$.ajax({     
 	  type: "GET",
       url: 'util_op.php',                  
@@ -339,42 +502,11 @@ function GetSessionData()
 	
 function setinfo()
 {
-
 	//convert php array to js array
+	
 	g_vids = <?php echo json_encode($g_vids ); ?>;
 	g_cats = <?php echo json_encode($g_cats ); ?>;
 	g_vidcat = <?php echo json_encode($g_vidcat ); ?>;
-	
-/*
-	for (i=0; i < 50; i++)
-	{
-		var key = "video " + i + ".flv";
-		
-		vid_info[key] = {
-			name: "video " + i + " name",
-			client: "video " + i + " client",
-			director: "video " + i + " director",
-			production: "video " + i + " production co",
-			agency: "video " + i + " agency"
-		}
-	}
-
-	var keys = Object.keys(vid_info);
-	
-	for (i=0; i < keys.length; i++)
-	{
-		cat_info[i] = {
-			file: []
-		}
-	}
-	
-	for (i=0; i < keys.length; i++)
-	{
-		var j = i % 10;
-		cat_info[j].file.push(keys[i]);
-	}
-*/	
-	
 }
   
 function ClickVideo(li)
@@ -402,7 +534,7 @@ function SetVideoFields(vid_indx)
 
 function SaveVidInfo(vid_indx)
 {
-	var vid_id = g_vids[vid_indx]['video_id'];
+	var filename = g_vids[vid_indx]['filename'];
 	
 	var name = document.getElementById('video_name').value;
 	var cli = document.getElementById('video_client').value;
@@ -413,7 +545,7 @@ function SaveVidInfo(vid_indx)
     $.ajax({     
 		type: "GET",
 		url: 'util_op.php',                  
-		data: "jquery_op=savevideodata&id=" + vid_id + "&name=" + name + 
+		data: "jquery_op=savevideodata&filename=" + filename + "&name=" + name + 
 			  "&client=" + cli +	"&director=" + dir + "&production=" + 
 			   prod + "&agency=" + ag,
 		dataType: 'json',	 
@@ -423,10 +555,17 @@ function SaveVidInfo(vid_indx)
 			if (result != "error")
 			{
 				g_vids[vid_indx]['name'] = name;
-				g_vids[vid_id]['client'] = cli;
-				g_vids[vid_id]['director'] = dir;
-				g_vids[vid_id]['production_co'] = prod;
-				g_vids[vid_id]['agency'] = ag;
+				g_vids[vid_indx]['client'] = cli;
+				g_vids[vid_indx]['director'] = dir;
+				g_vids[vid_indx]['production_co'] = prod;
+				g_vids[vid_indx]['agency'] = ag;
+				
+				//update video list name
+				$('#video_list1 > li span.name:eq('+vid_indx+')').text(name);
+				
+				//!!
+				g_count1++;
+				UTSetVid();
 			}
 		} 
     });
@@ -446,12 +585,22 @@ function CreateCategory(name)
 			{
 				//insert new cat to top of list
 				$('#cats_list').prepend('<li><a>' + name + '</a><ul class="cat_video_list">');
+				
+				//add tp top of array
+				//!! test
+				//add to top of list
+				g_cats.unshift({});
+				g_cats[0].name = name;
+				
+				//!!
+				g_count2++;
+				UTCreateCat();
 			}
 		} 
     });
 }
 
-function DeleteCategory(name)
+function DeleteCategory(indx, name)
 {
     $.ajax({     
 		type: "GET",
@@ -463,8 +612,14 @@ function DeleteCategory(name)
 		{
 			if (result != "error")
 			{ 
-				var indx = g_sel_cat['indx'];
+				//remove in html list 
 				$('#cats_list li a:eq('+indx+')').parent().empty().remove();
+				
+				//remove from array
+				g_cats.splice(indx, 1);
+				
+				//!!
+				UTDeleteCat();
 			}
 		} 
     });
@@ -472,8 +627,6 @@ function DeleteCategory(name)
 
 function AddCatVideo(sel_cat, sel_vid)
 {
-	console.log("cat: " + sel_cat['indx'] + "vid " + sel_vid['indx']);
-
     $.ajax({     
 		type: "GET",
 		url: 'util_op.php',                  
@@ -484,8 +637,11 @@ function AddCatVideo(sel_cat, sel_vid)
 		{
 			if (result != "error")
 			{
-				// selects all childs of cats_list
+				//add cat to html list
 				$('#cats_list > li').eq(sel_cat['indx']).find('ul').append("<li>" + sel_vid['name'] + "</li>");
+				
+				//!!
+				UTCreateCatVid();
 			}
 		} 
     }); 
@@ -506,7 +662,7 @@ function DelCatVideo(sel_cat, sel_vid)
 			{
 				//!! also works
 				//$('#cats_list > li').eq(4).find('ul').find('li').eq(1).remove();
-				$('#cats_list > li:eq(4) ul li:eq(1)').remove();
+				$('#cats_list > li:eq('+sel_cat["indx"]+') ul li:eq('+sel_vid["indx"]+')').remove();
 			}
 		} 
     }); 
@@ -523,9 +679,12 @@ function DelCatVideo(sel_cat, sel_vid)
 		 <button id="btn2">clone</button>
 		 
 -->		 
-		<button id="btn3">set</button>
-		<button id="btn4">get</button>
-		
+		<button id="btn3">set vid</button>
+		<button id="btn4">del vid</button>
+		<button id="btn5">set cat</button>
+		<button id="btn6">del cat</button>
+		<button id="btn7">set catvid</button>
+		<button id="btn8">um...</button>
 			
 			
 			
