@@ -14,17 +14,35 @@ mysql_query('INSERT INTO table (text, category) VALUES '.implode(',', $sql));
 
 if ($_POST['jquery_op'] == upload)
 {
+	$error_msg[UPLOAD_ERR_OK] = "There is no error, the file uploaded with success.";
+	$error_msg[UPLOAD_ERR_INI_SIZE] = "The uploaded file exceeds the upload_max_filesize directive in php.ini.";
+	$error_msg[UPLOAD_ERR_FORM_SIZE] = "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.";
+	$error_msg[UPLOAD_ERR_PARTIAL] = "The uploaded file was only partially uploaded.";
+	$error_msg[UPLOAD_ERR_NO_FILE] = "No file was uploaded.";
+	$error_msg[UPLOAD_ERR_NO_TMP_DIR] = "Missing a temporary folder.";
+	$error_msg[UPLOAD_ERR_CANT_WRITE] = "Failed to write file to disk.";
+	$error_msg[UPLOAD_ERR_EXTENSION] = "A PHP extension stopped the file upload.";
 
-	foreach ($_FILES["azcast"]["error"] as $key => $error) 
+	foreach ($_FILES["videos"]["error"] as $key => $error) 
 	{
 		if ($error == UPLOAD_ERR_OK) 
 		{
-			$name = $_FILES["azcast"]["name"][$key];
-			move_uploaded_file( $_FILES["azcast"]["tmp_name"][$key], "uploads/" . $name);
+			$name = $_FILES["videos"]["name"][$key];
+			
+			move_uploaded_file( $_FILES["videos"]["tmp_name"][$key], "video/" . $name);
 
 			$data[] = $name;
 		}
+		else
+		{
+			$name = $_FILES["videos"]["name"][$key];
+			pr($error_msg[$error].": ".$name);
+			$data['error'] = $error_msg[$error].": ".$name;
+			break;
+		}
     }
+	
+	pr("max ".$upload_max_filesize);
 	
 	echo json_encode($data);
 	

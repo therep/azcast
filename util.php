@@ -18,6 +18,9 @@
 <!-- !! link to github file or download ? -->
 <script type="text/javascript" src="http://malsup.github.com/jquery.form.js"></script>
 
+<!-- vid player http://videojs.com/-->
+<link href="http://vjs.zencdn.net/c/video-js.css" rel="stylesheet">
+<script src="http://vjs.zencdn.net/c/video.js"></script>
 
 <style type="text/css">
 
@@ -45,7 +48,14 @@ util_main();
 
 function util_main()
 {
+	global $g_max_upload;
+	global $g_max_post;
 	
+	//phpinfo(INFO_CONFIGURATION);
+	
+	$g_max_upload = ini_get('upload_max_filesize');
+	$g_max_post = ini_get('post_max_size');
+		
 	GetInfo();
 }
 
@@ -102,6 +112,9 @@ function GetInfo()
 
 <script type="text/javascript">
 
+var g_max_upload;
+var g_max_post;
+var g_video1;
 
 var g_sel_vid = {};
 var g_sel_cat = {};
@@ -111,11 +124,10 @@ var g_vids = {};
 var g_cats = {};
 var g_vidcat = {};
 
-//!!
-var g_count1 = 0;
-var g_count2 = 0;
-var g_count3 = 0;
-var g_count4 = 0;
+//!! UT
+var g_count = [];
+var g_intvl = [];
+
 
 main_util();
 
@@ -126,11 +138,17 @@ function main_util()
 	
 	
 }
+/*
+_V_("video_player").ready(function(){ 
+	$g_video1 = this; 
+});*/
   
 $(document).ready(function() 
 {
-	
 	$("#tabs").tabs();
+	
+	//initialize video player
+	g_video1 = _V_("video_player", { "controls": true, "autoplay": false, "preload": "auto" });
 	
 	GetSessionData();
 
@@ -142,9 +160,14 @@ $(document).ready(function()
 		ClickVideo(this);
 
 		g_sel_vid['indx'] = $(this).index();
-		g_sel_vid['name'] = g_vids[$(this).index()]['filename'];;
+		g_sel_vid['name'] = g_vids[$(this).index()]['filename'];
 
 		SetVideoFields(g_sel_vid['indx']);
+				
+		//!!allow other types (look at file extension)
+		g_video1.pause();
+		$('.vjs-poster').attr("src","images/Coca-Cola-belly-120X90.jpg");
+		$('.vjs-poster').show();
 	});
 	
 	//click on a category
@@ -175,6 +198,7 @@ $(document).ready(function()
 	
 
 	$("#btn2").click(function(){
+		
 		$("#videos_div").clone().appendTo("#fragment-2");
 	});
 
@@ -241,44 +265,80 @@ $(document).ready(function()
 	$('form').ajaxForm({
 		data: {jquery_op: 'upload'},
 		dataType: 'json', 
+		//!! disable submit button
 		beforeSend: function() {
 			status.empty();
 			var percentVal = '0%';
-			bar.width(percentVal)
+			bar.width(percentVal);
 			percent.html(percentVal);
 		},
 		uploadProgress: function(event, position, total, percentComplete) {
 			var percentVal = percentComplete + '%';
-			bar.width(percentVal)
+			bar.width(percentVal);
 			percent.html(percentVal);
 			//console.log(percentVal, position, total);
 		},
+		/*
 		complete: function(data) {
 			//status.html(xhr.responseText);
 			var percentVal = '100%';
-			bar.width(percentVal)
-			percent.html(percentVal);
-		},
+			bar.width(percentVal);
+			//percent.html(percentVal);
+		},*/
 		success: function(data)          
 		{
-			for (i=0; i < data.length; i++)
+			
+			if (!data || data['error'])
 			{
-				AddVideo(data[i]);
+				//!! need to reset back again
+				bar.css('backgroundColor', 'white');
+				percent.css({'font-size':'10px', 'left':'0px'});
+				
+				if (!data)
+				{
+					var max = (g_max_upload < g_max_post) ? g_max_upload : g_max_post;
+						
+					percent.html("error uploading, total max upload size is " + max + "M bytes");
+				}
+				else
+				{
+					percent.html(data['error']);
+				}
+			}
+			else
+			{
+				var percentVal = '100%';
+				//bar.width(percentVal);
+				//percent.html(percentVal);
+				//!! update progress bar here
+				for (i=0; i < data.length; i++)
+				{
+					//!! multi posts ok??
+					AddVideo(data[i]);
+				}
 			}
 		}
 	});
 	
+	//!! UT  --------------------------------------
     $("#btn3").click(function () 
 	{
-		 
-		 g_count1 = 0;
-		UTSetVid();
-		
+		g_count[0] = 0;
+		g_intvl[0] = setInterval(function(){UTSetVid()},1000);
 	});
+	
+    $("#btn9").click(function () 
+	{
+		g_count[1] = 0;
+		g_intvl[1] = setInterval(function(){UTSetVidInfo()},1000);
+	});
+	
 
   	$("#btn4").click(function () 
 	{
 		UTDeleteVid();
+		//clearInterval(g_intvl[0]);
+		//g_intvl[0] = setInterval(function(){UTDeleteVid()},10);
 	});
 	
     $("#btn5").click(function () 
@@ -304,9 +364,7 @@ $(document).ready(function()
 	});
 
     $("#btn8").click(function () 
-	{
-		 
-		
+	{	
 		
 	});
 	
@@ -364,20 +422,58 @@ function UTDeleteCat()
 
 function UTSetVid()
 {
-	console.log("count " + g_count1);
+	var num = 2;
 	
-	if (g_count1 > 100)
+	if (g_count[0] > g_vids.length)
+	{
 		return;
-
-		var filename = "video " + g_count1 + ".flv";
+	}
 	
-		AddVideo(filename);
+	if (g_count[0])
+	{
+		if (g_count[0] == g_vids.length)
+		{
+			console.log("count " + g_count[0]);
+			
+			var i = g_count[0]-1;
+		
+			document.getElementById('video_name').value = "video " + i;
+			document.getElementById('video_client').value = "client " + i;
+			document.getElementById('video_director').value = "director " + i;
+			document.getElementById('video_production').value = "production " + i;
+			document.getElementById('video_agency').value = "agency " + i;
+			
+			SaveVidInfo(g_count[0]-1);
+		}
+	}
+	
+	if (g_vids.length == num)
+	{
+		clearInterval(g_intvl[0]);
+		return;
+	}
+	
+	g_count[0] = g_vids.length + 1;
+	
+	var filename = "video " + g_vids.length + ".flv";
+	
+	AddVideo(filename);
 }
 
 function UTSetVidInfo()
 {
-
-	var i = g_count1;
+	if (g_vids.length == g_count[1])
+	{
+		clearInterval(g_intvl[1]);
+		return;
+	}
+	
+	if (document.getElementById('video_name').value.indexOf('video') === -1) 
+	{
+		return;
+	}
+	
+	var i = g_count[1];
 	
 		document.getElementById('video_name').value = "video " + i;
 		document.getElementById('video_client').value = "client " + i;
@@ -386,8 +482,10 @@ function UTSetVidInfo()
 		document.getElementById('video_agency').value = "agency " + i;
 		
 		var filename = "video " + i + ".flv";
-		
-		SaveVidInfo(0);
+
+		g_count[1]++;
+
+		SaveVidInfo(g_count[1]-1);
 }
 
 function UTDeleteVid()
@@ -417,21 +515,17 @@ function AddVideo(filename)
 			if (result != "error")
 			{
 				//add to top of html list
-				$('#video_list1').prepend("<li><span class='name'></span><span class='file'>" + filename + "</span></li>");
+				$('#video_list1').append("<li><span class='name'></span><span class='file'>" + filename + "</span></li>");
 				
 				//add to js objects
-				//g_vids[g_vids.length] = {};
-				//g_vids[g_vids.length-1].filename = filename;
+				g_vids[g_vids.length] = {};
+				g_vids[g_vids.length].filename = filename;
 				
 				//add to top of list
-				g_vids.unshift({});
-				g_vids[0].filename = filename;
-				
-				//!!
-				UTSetVidInfo();
-				
-				//!!
-				//console.log("vid len" + g_vids[0]['filename']);
+				//!! test, double check this usage
+				//!! use splice
+				//g_vids.unshift({});
+				//g_vids[0].filename = filename;
 			}
 		} 
     });
@@ -454,9 +548,6 @@ function DeleteVideo(indx, name)
 				
 				//remove object 
 				g_vids.splice(indx, 1);
-				
-				//!!
-				UTDeleteVid();
 			}
 		} 
     });
@@ -502,6 +593,13 @@ function GetSessionData()
 	
 function setinfo()
 {
+	//get php server upload max 
+	g_max_upload = <?php echo json_encode($g_max_upload); ?>;
+	g_max_post = <?php echo json_encode($g_max_post); ?>;
+
+	g_max_upload = parseInt(g_max_upload);
+	g_max_post = parseInt(g_max_post);
+	
 	//convert php array to js array
 	
 	g_vids = <?php echo json_encode($g_vids ); ?>;
@@ -562,10 +660,6 @@ function SaveVidInfo(vid_indx)
 				
 				//update video list name
 				$('#video_list1 > li span.name:eq('+vid_indx+')').text(name);
-				
-				//!!
-				g_count1++;
-				UTSetVid();
 			}
 		} 
     });
@@ -699,7 +793,7 @@ function DelCatVideo(sel_cat, sel_vid)
 	
 		<!-- file upload -->
 		<form action="util_op.php" method="post" enctype="multipart/form-data">
-			<input type="file" name="azcast[]" multiple><br>
+			<input type="file" name="videos[]" multiple><br>
 			<input type="submit" value="Upload File to Server">
 		</form>
     
@@ -738,7 +832,17 @@ function DelCatVideo(sel_cat, sel_vid)
 			<label for="video_production">Production Co:</label>
 			<input type="text" id="video_production" class="vid_info_input" name="video_production"><br>
 			<label for="video_agency">Agency:</label>
-			<input type="text" id="video_agency" class="vid_info_input" name="video_agency"><br>			
+			<input type="text" id="video_agency" class="vid_info_input" name="video_agency"><br>
+			<label for="video_image">Image:</label>
+			<form action="#" class="example">
+			<div class="fileinputs">
+				<input type="file" class="file" id="video_image" />
+				<div class="fakefile">
+					<input />
+					<img src="button_select.gif" />
+				</div>
+			</div>
+			</form>	
 		</div>
 
 		<div id="add_video_div">
@@ -790,41 +894,39 @@ function DelCatVideo(sel_cat, sel_vid)
 		
     </div>
     <div id="fragment-2">
-        <div id="videos_div">
-            <div id="upload_div">
-                <form action="upload.php" method="post" enctype="multipart/form-data" target="upload_target" onsubmit="startUpload();" >
-                    <p id="f1_upload_process">Loading...<br/><img src="loader.gif" /><br/></p>
-                    <p id="f1_upload_form" align="center"><br/>
-                        <label>File:  
-                              <input name="myfile" type="file" size="30" />
-                         </label>
-                         <label>
-                             <input type="submit" name="submitBtn" class="sbtn" value="Upload" />
-                         </label>
-                    </p>
-                     <iframe id="upload_target" name="upload_target" src="#" style="width:0;height:0;border:0px solid #fff;"></iframe>
-                 </form>
-             </div>
-
-			<div id="video_list2_div">
+		<div id="videos_div">
+			<div id="video_list1_div">
 				<span class="video_name_hdr">Name</span><span class="video_file_hdr">File</span>
-				<ul id="video_list2">
+				<ul id="video_list1">
 					
 					<?php
 						foreach($g_vids as $key=>$value)
 						{
-							echo "<li><span class='name'>{$g_vids[$key]['name']}</span><span class='file'>{$key}</span></li>";
+							echo "<li><span class='name'>{$g_vids[$key]['name']}</span><span class='file'>{$g_vids[$key]['filename']}</span></li>";
 							print "\n";
 							print "\t\t\t\t\t\t\t";
 						}
 					?>
 				</ul>
 			</div>
+        </div>
+		
 			
 		
     </div>
-	</div>
+	
 </div>
+
+		<div id="video_play">
+		
+			<video id="video_player" class="video-js vjs-default-skin" width="400" height="300">
+					<!--data-setup='{"controls" : true, "autoplay" : false, "preload" : "none"}'>-->
+					<!--<source src="video/1.flv" type="video/x-flv" id="video_src">-->
+				</video>
+			
+		
+		</div>
+
 </body>   
 
 
