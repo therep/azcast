@@ -1,4 +1,3 @@
-
 		body {
 			padding: 0px;
 			
@@ -225,10 +224,12 @@
 
 		#videos_div {
 			position: absolute;
+			top: 150px;
 			width: 450px;
 			height: 475px;
 			padding: 0px;
 			margin: 0px;
+			text-wrap: none;
 			
 			
 		}
@@ -245,12 +246,22 @@
 		#video_list1_div, #video_list2_div {
 			position: absolute;
 			left: 0px;
-			top: 80px;
+			top: 0px;
 			width: 450px;
-			height: 400px;
+			height: 330px;
 			padding: 0px;
 			margin: 0px;
 			cursor: pointer;
+		}
+
+		.vid_name {
+			display: inline-block;
+			/*position: absolute;*/
+			/*width: 50px;*/
+		}
+		.vid_file {
+			position: absolute;
+			left: 200px;
 		}
 		
 	
@@ -273,7 +284,7 @@
 			color: #ad855c;
 			font-size: 15px;
 			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;			
-			background-color: #e6dace;
+			/*background-color: #e6dace;*/
 			
 
 			
@@ -291,18 +302,22 @@
 			font-size: 15px;
 			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;		
 
-			left: 225px;
+			left: 200px;
 		}
 		
+		
+		/*
 		#video_list1 li .file, #video_list2 li .file {
 			margin-left: 100px;
-		}
+		}*/
 		
 		
 
 		
 		input:hover {background-color: #F0F0F0;}
 		input:focus {background-color: #F9F9F9;}
+		select:hover {background-color: #F0F0F0;}
+		select:focus {background-color: #F9F9F9;}
 	
 		#video_info_div {
 			position: absolute;
@@ -316,11 +331,33 @@
 			/*background-color: #e6dace;*/			
 			
 		}
-
+		
 			.vid_info_input {
-				background-color: #e6e6e6;
-				border: none;
+			position: absolute;
+			left: 100px;
+			width: 200px;
+			
+
+				border-width: 1px;
+				
 			}
+			
+			#video_upload_div {
+				position: relative;
+				font-size: 12px;
+				font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;	
+				width: 320px;
+			}
+			
+			
+			/*
+			#form_video_upload { display: block; margin: 20px auto; background: #eee; border-radius: 10px; padding: 15px }
+			
+			.progress { position:absolute; width:400px; border: 1px solid #ddd; padding: 1px; border-radius: 3px; }
+			*/
+			.bar { position:absolute; background-color: #e0e0e0; width:0%; height:20px; border-radius: 3px; }
+			.percent { position:absolute; display:inline-block; left: 48%; }
+			
 			
 		#save_vid_info {
 			float: right;
@@ -352,7 +389,7 @@
 			position: absolute;
 			text-align: center;
 			left: 500px;
-			top: 340px;
+			top: 400px;
 			padding: 0px;
 			margin: 0px;
 			
@@ -366,8 +403,8 @@
 		#del_video_div {
 			position: absolute;
 			text-align: center;
-			left: 620px;
-			top: 340px;
+			left: 640px;
+			top: 330px;
 			padding: 0px;
 			margin: 0px;
 			font-size: 12px;
@@ -379,8 +416,8 @@
 		#cats_list_div {
 			position: absolute;
 			left: 550px;
-			top: 300px;
-			width: 180px;
+			top: 350px;
+			width: 280px;
 			padding: 0px;
 			margin: 0px;
 			
@@ -391,10 +428,12 @@
 			
 		}
 	
-		#add_cat_label {
-			float: right;
+		#add_cat {
+			/*float: right;*/
 			color: red;
 			cursor: pointer;
+			z-index: 5;
+			
 			
 		}
 		
@@ -503,4 +542,31 @@
 	
 }
 
+#video_play {
+			position: absolute;
+			width: 400px;
+			height: 300px;
+}
 
+/* file input */
+
+div.fileinputs {
+	position: relative;
+}
+
+div.fakefile {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 1;
+}
+
+input.file {
+	position: relative;
+	text-align: right;
+	-moz-opacity:0 ;
+	filter:alpha(opacity: 0);
+	opacity: 0;
+	z-index: 2;
+	border-radius: 50px;
+}

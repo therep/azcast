@@ -24,14 +24,6 @@
 
 <style type="text/css">
 
-<style>
-
-form { display: block; margin: 20px auto; background: #eee; border-radius: 10px; padding: 15px }
-
-.progress { position:relative; width:400px; border: 1px solid #ddd; padding: 1px; border-radius: 3px; }
-.bar { background-color: #B4F5B4; width:0%; height:20px; border-radius: 3px; }
-.percent { position:absolute; display:inline-block; top:3px; left:48%; }
-</style>
 
 </style>
 
@@ -43,6 +35,7 @@ require_once('util_op.php');
 $g_vids = array();
 $g_cats = array();
 $g_vidcat = array();
+$g_image_files = array();
 
 util_main();
 
@@ -57,6 +50,43 @@ function util_main()
 	$g_max_post = ini_get('post_max_size');
 		
 	GetInfo();
+	
+	GetImageFiles();
+	
+	
+	//CreateTable();
+	
+}
+
+function GetImageFiles()
+{
+    global $g_image_files;
+
+    //get all filenames in project directory
+    $file_names = scandir("uploads");
+
+    if ($file_names === false)
+    {
+        print "GetProjectNames:scandir failed<br />";
+        return false;
+    }
+
+    //remove '.' and '..'
+    $file_names = array_diff($file_names, array('.', '..'));
+
+    foreach($file_names as $name)
+    {
+        $info = pathinfo($name);
+		
+		if ($info['extension'] != "jpg")
+		{
+			continue;
+		}
+		
+        $g_image_files[] = $name;
+    }
+
+    return true;
 }
 
 function GetInfo()
@@ -133,22 +163,20 @@ main_util();
 
 function main_util()
 {
+	//SetVideoFields(0);
+	
 	setinfo();
 	
 	
 	
 }
-/*
-_V_("video_player").ready(function(){ 
-	$g_video1 = this; 
-});*/
   
 $(document).ready(function() 
 {
 	$("#tabs").tabs();
 	
 	//initialize video player
-	g_video1 = _V_("video_player", { "controls": true, "autoplay": false, "preload": "auto" });
+	//g_video1 = _V_("video_player", { "controls": true, "autoplay": false, "preload": "auto" });
 	
 	GetSessionData();
 
@@ -157,31 +185,25 @@ $(document).ready(function()
 	//click on video in main video list
 	$('#video_list1 li').live('click', function() { 
 
-		ClickVideo(this);
+		SelectVideo($(this).index());
 
 		g_sel_vid['indx'] = $(this).index();
 		g_sel_vid['name'] = g_vids[$(this).index()]['filename'];
 
 		SetVideoFields(g_sel_vid['indx']);
+		
+		
 				
 		//!!allow other types (look at file extension)
-		g_video1.pause();
-		$('.vjs-poster').attr("src","images/Coca-Cola-belly-120X90.jpg");
-		$('.vjs-poster').show();
+		//g_video1.pause();
+		//$('.vjs-poster').attr("src","images/Coca-Cola-belly-120X90.jpg");
+		//$('.vjs-poster').show();
 	});
 	
 	//click on a category
 	$('#cats_list li a').live('click', function() {
     
-		//!! create a selectcat function
-		
-		$('.cat_video_list').eq(g_sel_cat['indx']).hide(1);
-		$(this).parent().find('ul').toggle("slow", "swing");
-		
-		g_sel_cat['indx'] = $(this).parent().index();
-		g_sel_cat['name'] = $(this).html();
-		
-		console.log("sel: " + g_sel_cat['indx']);
+		SelectCategory($(this).parent().index());
     });
 
 	//click on video in a category
@@ -192,7 +214,7 @@ $(document).ready(function()
 		console.log("cat vid " + g_sel_cat_vid['indx'] + "name " + g_sel_cat_vid['name']);
 		//console.log("click " + $(this).find('ul').html());
 
-		ClickVideo(this);
+		SelectCatVideo(g_sel_cat['indx'], $(this).index());
 
 	});
 	
@@ -201,25 +223,6 @@ $(document).ready(function()
 		
 		$("#videos_div").clone().appendTo("#fragment-2");
 	});
-
-	$("#btn33").click(function () 
-  {
-     $.ajax({     
-		type: "GET",
-      url: 'util_op.php',                  
-      data: "jquery_op=getvideodata&row=" + 2,
-                                       
-      dataType: 'json',                
-      success: function(data)          
-      {
-        $('#video_name').val(data['name']); 
-		$('#video_client').val(data['client']);
-		$('#video_director').val(data['director']);
-		$('#video_production').val(data['production_co']);
-		$('#video_agency').val(data['agency']);
-      } 
-    });
-  });
 
 	$('#save_vid_info').click(function() 
    { 
@@ -231,7 +234,6 @@ $(document).ready(function()
    { 
 		var name = document.getElementById('new_cat_name').value;
 		CreateCategory(name);
-		
    });
 
 	$('#add_cat_video').click(function() 
@@ -262,7 +264,7 @@ $(document).ready(function()
 	var percent = $('.percent');
 	var status = $('#status');
    
-	$('form').ajaxForm({
+	$('#form_video_upload').ajaxForm({
 		data: {jquery_op: 'upload'},
 		dataType: 'json', 
 		//!! disable submit button
@@ -308,13 +310,21 @@ $(document).ready(function()
 			else
 			{
 				var percentVal = '100%';
-				//bar.width(percentVal);
-				//percent.html(percentVal);
+				bar.width(percentVal);
+				percent.html(percentVal);
 				//!! update progress bar here
 				for (i=0; i < data.length; i++)
 				{
 					//!! multi posts ok??
-					AddVideo(data[i]);
+					if (data[i].split('.').pop() == "jpg")
+					{
+						AddImage(data[i]);
+					}
+					
+					if (data[i].split('.').pop() == "flv")
+					{
+						AddVideo(data[i]);
+					}
 				}
 			}
 		}
@@ -323,8 +333,16 @@ $(document).ready(function()
 	//!! UT  --------------------------------------
     $("#btn3").click(function () 
 	{
-		g_count[0] = 0;
-		g_intvl[0] = setInterval(function(){UTSetVid()},1000);
+		
+		
+		
+		
+		//$('.cat_video_list li:eq('+g_sel_cat["indx"]+')').show();
+		
+		//$('.cat_video_list:eq(7)').show();
+		
+		//g_count[0] = 0;
+		//g_intvl[0] = setInterval(function(){UTSetVid()},1000);
 	});
 	
     $("#btn9").click(function () 
@@ -502,6 +520,26 @@ function UTDeleteVid()
 	//}
 }
 
+function SelectCategory(indx)
+{		
+	$('#cats_list li a').css('backgroundColor', 'white');
+	$('#cats_list li a:eq('+indx+')').css('backgroundColor', '#EEE5DD');
+	
+	$('.cat_video_list').hide(1);
+	$('#cats_list ul:eq('+indx+')').show("slow", "swing");
+	
+	g_sel_cat['indx'] = indx;
+	g_sel_cat['name'] = $('#cats_list li a:eq('+indx+')').text();
+}
+
+function AddImage(filename)
+{
+	$('#video_image')
+         .append($("<option></option>")
+         .attr("value", filename)
+         .text(filename));
+}
+
 function AddVideo(filename)
 {
     $.ajax({     
@@ -515,11 +553,13 @@ function AddVideo(filename)
 			if (result != "error")
 			{
 				//add to top of html list
-				$('#video_list1').append("<li><span class='name'></span><span class='file'>" + filename + "</span></li>");
+				$('#video_list1').append("<li><span class='vid_name'></span><span class='vid_file'>" + filename + "</span></li>");
+				
 				
 				//add to js objects
 				g_vids[g_vids.length] = {};
-				g_vids[g_vids.length].filename = filename;
+				g_vids[g_vids.length-1].name = "unset";
+				g_vids[g_vids.length-1].filename = filename;
 				
 				//add to top of list
 				//!! test, double check this usage
@@ -607,59 +647,66 @@ function setinfo()
 	g_vidcat = <?php echo json_encode($g_vidcat ); ?>;
 }
   
-function ClickVideo(li)
+function SelectVideo(indx)
 {
-	var ul = li.parentNode;
-	var li_elements = ul.getElementsByTagName('li');
-	
-	for (i=0; i < li_elements.length; i++)
+	$('#video_list1 li').css('backgroundColor', 'white');
+	$('#video_list1 li:eq('+indx+')').css('backgroundColor', '#e6dace');
+}
+
+function SelectCatVideo(catindx, vidindx)
+{
+	$('.cat_video_list li').css('backgroundColor', 'white');
+	$('.cat_video_list:eq('+catindx+') li:eq('+vidindx+')').css('backgroundColor', '#e6dace');
+}
+
+function SetVideoFields(indx)
+{
+	if (g_vids[indx].name == 'unset') 
 	{
-		li_elements[i].style.backgroundColor = 'white';
+		$('.vid_info_input').val("");
+		return;
 	}
 
-	//li.style.backgroundColor = "#b8aea5";
-	li.style.backgroundColor = "#e6dace";
+	document.getElementById('video_name').value = g_vids[indx].name;
+	document.getElementById('video_client').value = g_vids[indx].client;
+	document.getElementById('video_director').value = g_vids[indx].director;
+	document.getElementById('video_production').value = g_vids[indx].production_co;
+	document.getElementById('video_agency').value = g_vids[indx].agency;
+	document.getElementById('video_image').value = g_vids[indx].image;
 }
 
-function SetVideoFields(vid_indx)
+function SaveVidInfo(indx)
 {
-	document.getElementById('video_name').value = g_vids[vid_indx].name;
-	document.getElementById('video_client').value = g_vids[vid_indx].client;
-	document.getElementById('video_director').value = g_vids[vid_indx].director;
-	document.getElementById('video_production').value = g_vids[vid_indx].production_co;
-	document.getElementById('video_agency').value = g_vids[vid_indx].agency;
-}
-
-function SaveVidInfo(vid_indx)
-{
-	var filename = g_vids[vid_indx]['filename'];
+	var filename = g_vids[indx]['filename'];
 	
 	var name = document.getElementById('video_name').value;
 	var cli = document.getElementById('video_client').value;
 	var dir = document.getElementById('video_director').value;
 	var prod = document.getElementById('video_production').value;
 	var ag = document.getElementById('video_agency').value;
+	var img = document.getElementById('video_image').value;
 	
     $.ajax({     
 		type: "GET",
 		url: 'util_op.php',                  
 		data: "jquery_op=savevideodata&filename=" + filename + "&name=" + name + 
 			  "&client=" + cli +	"&director=" + dir + "&production=" + 
-			   prod + "&agency=" + ag,
+			   prod + "&agency=" + ag + "&image=" + img,
 		dataType: 'json',	 
 		
 		success: function(result)          
 		{
 			if (result != "error")
 			{
-				g_vids[vid_indx]['name'] = name;
-				g_vids[vid_indx]['client'] = cli;
-				g_vids[vid_indx]['director'] = dir;
-				g_vids[vid_indx]['production_co'] = prod;
-				g_vids[vid_indx]['agency'] = ag;
+				g_vids[indx]['name'] = name;
+				g_vids[indx]['client'] = cli;
+				g_vids[indx]['director'] = dir;
+				g_vids[indx]['production_co'] = prod;
+				g_vids[indx]['agency'] = ag;
+				g_vids[indx]['image'] = img;
 				
 				//update video list name
-				$('#video_list1 > li span.name:eq('+vid_indx+')').text(name);
+				$('#video_list1 > li span.vid_name:eq('+indx+')').text(name);
 			}
 		} 
     });
@@ -677,18 +724,16 @@ function CreateCategory(name)
 		{
 			if (result != "error")
 			{
+				$('.cat_video_list').hide(1);
+				
 				//insert new cat to top of list
-				$('#cats_list').prepend('<li><a>' + name + '</a><ul class="cat_video_list">');
+				$('#cats_list').append('<li><a>' + name + '</a><ul class="cat_video_list">');
 				
-				//add tp top of array
-				//!! test
-				//add to top of list
-				g_cats.unshift({});
-				g_cats[0].name = name;
+				//add to js objects
+				g_cats[g_cats.length] = {};
+				g_cats[g_cats.length-1].name = name;
 				
-				//!!
-				g_count2++;
-				UTCreateCat();
+				SelectCategory(g_cats.length - 1);
 			}
 		} 
     });
@@ -711,9 +756,6 @@ function DeleteCategory(indx, name)
 				
 				//remove from array
 				g_cats.splice(indx, 1);
-				
-				//!!
-				UTDeleteCat();
 			}
 		} 
     });
@@ -731,11 +773,12 @@ function AddCatVideo(sel_cat, sel_vid)
 		{
 			if (result != "error")
 			{
-				//add cat to html list
+				//dynamic add video to html 
 				$('#cats_list > li').eq(sel_cat['indx']).find('ul').append("<li>" + sel_vid['name'] + "</li>");
 				
-				//!!
-				UTCreateCatVid();
+				console.log("sel cat " + sel_cat["indx"]);
+				
+				$('.cat_video_list:eq('+sel_cat['indx']+')').show();
 			}
 		} 
     }); 
@@ -773,13 +816,14 @@ function DelCatVideo(sel_cat, sel_vid)
 		 <button id="btn2">clone</button>
 		 
 -->		 
+<!--
 		<button id="btn3">set vid</button>
 		<button id="btn4">del vid</button>
 		<button id="btn5">set cat</button>
 		<button id="btn6">del cat</button>
 		<button id="btn7">set catvid</button>
 		<button id="btn8">um...</button>
-			
+	-->		
 			
 			
 <div id="tabs">
@@ -792,16 +836,22 @@ function DelCatVideo(sel_cat, sel_vid)
     <div id="fragment-1">
 	
 		<!-- file upload -->
-		<form action="util_op.php" method="post" enctype="multipart/form-data">
-			<input type="file" name="videos[]" multiple><br>
-			<input type="submit" value="Upload File to Server">
+		<div id="video_upload_div">
+		<form action="util_op.php" method="post" enctype="multipart/form-data" id="form_video_upload">
+			<input type="file" name="videos[]" id="video_upload" multiple>
+			<input type="submit" value="upload" id="video_upload_button">
 		</form>
+			<div class="bar"></div >
+			<div class="percent">0%</div >
+		</div>
     
+	
+	<!--
 		<div class="progress">
 			<div class="bar"></div >
 			<div class="percent">0%</div >
 		</div>
-		
+		-->
 		<div id="status"></div>
 
 		<div id="videos_div">
@@ -812,7 +862,7 @@ function DelCatVideo(sel_cat, sel_vid)
 					<?php
 						foreach($g_vids as $key=>$value)
 						{
-							echo "<li><span class='name'>{$g_vids[$key]['name']}</span><span class='file'>{$g_vids[$key]['filename']}</span></li>";
+							echo "<li><span class='vid_name'>{$g_vids[$key]['name']}</span><span class='vid_file'>{$g_vids[$key]['filename']}</span></li>";
 							print "\n";
 							print "\t\t\t\t\t\t\t";
 						}
@@ -824,15 +874,31 @@ function DelCatVideo(sel_cat, sel_vid)
 		<div id="video_info_div">
 			<span id="save_vid_info">Save</span><br>
 			<label for="video_name">Video Name:</label>
-			<input type="text" id="video_name" class="vid_info_input" name="video_name"  value="txt"><br>
+			<input type="text" id="video_name" class="vid_info_input" name="video_name"  value="" ><br>
 			<label for="video_client">Client:</label>
-			<input type="text" id="video_client" class="vid_info_input" name="video_client"><br>		
+			<input type="text" id="video_client" class="vid_info_input" name="video_client" value="" ><br>		
 			<label for="video_director">Director:</label>
-			<input type="text" id="video_director" class="vid_info_input" name="video_director"><br>
+			<input type="text" id="video_director" class="vid_info_input" name="video_director" value="" ><br>
 			<label for="video_production">Production Co:</label>
-			<input type="text" id="video_production" class="vid_info_input" name="video_production"><br>
+			<input type="text" id="video_production" class="vid_info_input" name="video_production" value="" ><br>
 			<label for="video_agency">Agency:</label>
-			<input type="text" id="video_agency" class="vid_info_input" name="video_agency"><br>
+			<input type="text" id="video_agency" class="vid_info_input" name="video_agency" value="" ><br>
+			<label for="video_image">Image:</label>
+			<select id="video_image" class="vid_info_input">
+				<option></option>
+				<?php
+					foreach($g_image_files as $file)
+					{
+						echo "<option value='{$file}'>{$file}</option>";
+					}
+				?>	
+			</select>
+			<!--  use hide/show to replace select and hide drop arrow
+			<label for="video_image_input">Agency:</label>
+			<input type="text" id="video_image_input" class="vid_info_input" name="video_image_input" ><br>			
+			-->
+				
+			<!--
 			<label for="video_image">Image:</label>
 			<form action="#" class="example">
 			<div class="fileinputs">
@@ -843,6 +909,7 @@ function DelCatVideo(sel_cat, sel_vid)
 				</div>
 			</div>
 			</form>	
+			-->
 		</div>
 
 		<div id="add_video_div">
@@ -858,7 +925,7 @@ function DelCatVideo(sel_cat, sel_vid)
 		
 	<div id="cats_list_div">
 			<label for="new_cat_name" id="add_cat">Create New</label>
-			<input type="text" id="new_cat_name"><br>
+			<input type="text" id="new_cat_name" value=""><br>
 			<ul id="cats_list">
 				<?php
 				foreach($g_cats as $cat)
@@ -916,17 +983,15 @@ function DelCatVideo(sel_cat, sel_vid)
     </div>
 	
 </div>
-
+<!--
 		<div id="video_play">
 		
 			<video id="video_player" class="video-js vjs-default-skin" width="400" height="300">
-					<!--data-setup='{"controls" : true, "autoplay" : false, "preload" : "none"}'>-->
-					<!--<source src="video/1.flv" type="video/x-flv" id="video_src">-->
 				</video>
 			
 		
 		</div>
-
+-->
 </body>   
 
 

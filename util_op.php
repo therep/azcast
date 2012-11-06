@@ -1,5 +1,5 @@
 <?php
-session_start();
+//session_start();
 
 
 //multiple row insert
@@ -11,6 +11,7 @@ foreach( $data as $row ) {
 }
 mysql_query('INSERT INTO table (text, category) VALUES '.implode(',', $sql));
 */
+
 
 if ($_POST['jquery_op'] == upload)
 {
@@ -29,7 +30,7 @@ if ($_POST['jquery_op'] == upload)
 		{
 			$name = $_FILES["videos"]["name"][$key];
 			
-			move_uploaded_file( $_FILES["videos"]["tmp_name"][$key], "video/" . $name);
+			move_uploaded_file( $_FILES["videos"]["tmp_name"][$key], "uploads/" . $name);
 
 			$data[] = $name;
 		}
@@ -41,8 +42,6 @@ if ($_POST['jquery_op'] == upload)
 			break;
 		}
     }
-	
-	pr("max ".$upload_max_filesize);
 	
 	echo json_encode($data);
 	
@@ -93,14 +92,15 @@ if ($_GET['jquery_op'] == addcatvideo)
 
 if ($_GET['jquery_op'] == delcatvideo)
 {
-	//!!!!!!!!!!  finish
+	//!! fix query
 	/*
 	//delete video entry from this category
 	$query = "DELETE a 
 			  FROM vidcat a
-			  INNER JOIN cats b
-			  ON  a.cat_id = b.cat_id
-			  WHERE b.name='".$_GET['name']."'"; 
+			  INNER JOIN vids b, cats c
+			  ON  a.vid_id = b.vid_id
+			  WHERE c.name='".$_GET['cat']."' 
+			  and b.filename='".$_GET['file']."'";
 
 	if (!SQLSetData($query))
 	{
@@ -188,7 +188,7 @@ if ($_GET['jquery_op'] == savevideodata)
 {
 	$query = "UPDATE vids
 			 SET name='".$_GET['name']."', client='".$_GET['client']."', director='".$_GET['director'].
-			 "', production_co='".$_GET['production']."', agency='".$_GET['agency'].
+			 "', production_co='".$_GET['production']."', image='".$_GET['image']."', agency='".$_GET['agency'].
 			 "' WHERE filename='".$_GET['filename']."'";
 			 
 	if (!SQLSetData($query))
@@ -221,6 +221,22 @@ if ($_GET['jquery_op'] == getvideodata)
 	
 	return true;
 }
+
+function CreateTable($name)
+{
+	$query = "CREATE TABLE cats
+			(cat_id int,
+			 name varchar(100))";
+			 
+	if (!SQLSetData($query))
+	{
+		pr("Can't set data : " . mysql_error());
+		return false;
+	}
+	
+	return true;
+}
+
 
 function SQLSetData($query)
 {
@@ -269,6 +285,11 @@ function OpenDatabase()
 	$pass = "princess";
 	$database = "azcasting";
 
+	//$host = "jlynnecosmetics.com";
+	//$user = "jlynneco_ward";
+	//$pass = "big20mac";
+	//$database = "jlynneco_db1";
+	
 	if (!($con = mysql_connect($host,$user,$pass)))
 	{
 		pr('Could not connect: ' . mysql_error());
@@ -284,7 +305,7 @@ function OpenDatabase()
 	return true;
 }
 
-function pr($data, $mode)
+function pr($data)
 {
 	if (!isset($mode))
 		$mode = 'a';
