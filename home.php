@@ -21,10 +21,13 @@
 <script src="jquery.serialScroll.js" type="text/javascript" charset="utf-8"></script>
 <script src="coda-slider.js" type="text/javascript" charset="utf-8"></script>
 
+<!-- vid player http://videojs.com/-->
+<link href="http://vjs.zencdn.net/c/video-js.css" rel="stylesheet">
+<script src="http://vjs.zencdn.net/c/video.js"></script>
 
 <?php
 
-require_once('../util_op.php');
+require_once('util_op.php');
 
 $g_vids = array();
 $g_cats = array();
@@ -76,10 +79,7 @@ function GetInfo()
 				{
 					if ($vid['video_id'] == $vidcat['vid_id'])
 					{
-						$g_vidcatarray[$cat['name']][] = $vid['image'];
-						
-						//print "img ".$vid['image'];
-						
+						$g_vidcatarray[$cat['name']][] = $vid;
 						break;
 					}
 				}
@@ -150,6 +150,8 @@ var g_vids = {};
 var g_cats = {};
 var g_vidcat = {};
 var g_vidcatarray = {};
+var g_sel_cat_vid = {}; 
+var g_video;
 
 main_util();
 
@@ -170,44 +172,90 @@ function setinfo()
 }
 
 jQuery(document).ready(function() {
-
+	
     jQuery('#mycarousel').jcarousel({
         visible: 3
     });
 
+	g_sel_cat_vid['name'] = g_cats[0]['name'];
+	
+	$('.content_change').hide();
+	$('#bio_div').show();
+	
 	$('#slider li a img').attr("alt", "");
 	
 	$('p.category:eq(0)').css('color', '#3cbaeb');
 		
 	UpdateImages($('p.category:eq(0)').text());	
 	
-	
+	//initialize video player
+	g_video = _V_("video_player", { "controls": true, "autoplay": false, "preload": "auto" });
 
+	$('.video_image').live('click', function() { 
+
+		g_sel_cat_vid['indx'] = $(this).parent('li').index();
+
+		$('.content_change').hide();
+		$('#video_player_div').show();
+
+		$('#menu_list li a').css('color', '#969696');
+		$('#spots').css('color', '#3cbaeb');
+
+		var img = $(this).attr('src');
+		console.log("src " + img);
+		
+		g_video.pause();
+		$('.vjs-poster').attr("src", img);
+		$('.vjs-poster').show();
+		
+		
+		var vid = g_vidcatarray[g_sel_cat_vid['name']][g_sel_cat_vid['indx']]['filename'];
+		
+		g_video.src({ type: "video/flv", src: "uploads/"+vid });
+		
+		$('.video_info').remove();
+		$('.video_info_change').remove();
+		
+		var cli = g_vidcatarray[g_sel_cat_vid['name']][g_sel_cat_vid['indx']]['client'];
+		var dir = g_vidcatarray[g_sel_cat_vid['name']][g_sel_cat_vid['indx']]['director'];
+		var prod = g_vidcatarray[g_sel_cat_vid['name']][g_sel_cat_vid['indx']]['production_co'];
+		var ag = g_vidcatarray[g_sel_cat_vid['name']][g_sel_cat_vid['indx']]['agency'];
+
+		if (cli)
+			$('#video_player_div').append($("<span class='video_info'>Client: </span><span class='video_info_change'>"+cli+"<br></span>"));
+		if (dir)
+			$('#video_player_div').append($("<span class='video_info'>Director: </span><span class='video_info_change'>"+dir+"<br></span>"));
+		if (prod)
+			$('#video_player_div').append($("<span class='video_info'>Production Co: </span><span class='video_info_change'>"+prod+"<br></span>"));			
+		if (ag)
+			$('#video_player_div').append($("<span class='video_info'>Agency: </span><span class='video_info_change'>"+ag+"<br></span>"));
+		
+	});
+
+	$('#spots, #bio, #actors').click(function() 
+	{
+		$('.content_change').hide();
+		
+		if ($(this).is('#bio'))
+			$('#bio_div').show();
+		if ($(this).is('#spots'))
+			$('#video_player_div').show();
+		if ($(this).is('#actors'))
+			$('#actors_div').show();
+		
+		$('#menu_list li a').css('color', '#969696');
+		$(this).css('color', '#3cbaeb');
+	});
+	
+	
 	$('.category').click(function() 
 	{
 		$('p.category').css('color', '#969696');
 		$(this).css('color', '#3cbaeb');
 		
-		UpdateImages($(this).text());
-		/*
-		//$('#slider li a img').fadeOut('slow', function() {
-		$('#slider').fadeOut('slow', function() {
+		g_sel_cat_vid['name'] = $(this).text();
 		
-			console.log("found " );
-			
-			var cat = $(this).text();
-			
-			$('#slider li a img').attr("src","");
-
-			for (var i=0; i < g_vidcatarray[cat].length; i++)
-			{
-				console.log("found " + g_vidcatarray[cat][i]);
-				$('#first ul li:eq('+i+') a img').attr("src","images/" + g_vidcatarray[cat][i]);
-				//$('#first ul li:eq('+i+') a img').attr("alt","images/" + g_vidcatarray[cat][i]);
-			}
-			
-			$('#slider').fadeIn('slow');
-		});*/
+		UpdateImages($(this).text());
 	});
 	
     $("#btn1").click(function () 
@@ -243,12 +291,18 @@ function UpdateImages(cat)
 	
 	//$('#slider li').fadeOut('slow');
 	$('#slider li').hide();
-	$('#slider li a img').attr("src","");
+	$('#slider li img')
+		.attr("src","")
+		.attr("alt","");
 	
 	for (var i=0; i < g_vidcatarray[cat].length; i++)
 	{
-		console.log("found " + g_vidcatarray[cat][i]);
-		$('#first ul li:eq('+i+') a img').attr("src","../uploads/" + g_vidcatarray[cat][i]);
+		console.log("found " + g_vidcatarray[cat][i]['image']);
+		$('#first ul li:eq('+i+') img')
+				.attr("src","uploads/" + g_vidcatarray[cat][i]['image'])
+				.attr("class", "video_image");
+					
+		
 		//$('#first ul li:eq('+i+') a img').attr("alt","images/" + g_vidcatarray[cat][i]);
 	}
 	
@@ -274,18 +328,28 @@ function UpdateImages(cat)
 		<button id="btn3">3</button>
 -->
 <ul id="menu_list">
-	<li><a href="http://www.arizonacastingconnection.com/bio.html" class="current_link">BIO</a></li>
-	<li><a href="http://www.arizonacastingconnection.com/spots.html">SPOTS</a></li>
-	<li><a href="http://www.arizonacastingconnection.com/services.html">SERVICES</a></li>
-	<li><a href="http://www.arizonacastingconnection.com/credits.html">CREDITS</a></li>
-	<li><a href="http://www.arizonacastingconnection.com/actors-models.html">ACTORS/MODELS</a></li>
-	<li><a href="http://www.arizonacastingconnection.com/contact-afiliates.html">CONTACT/AFFILIATES</a></li>
+	<li><a href="#" id="bio">BIO</a></li>
+	<li><a href="#" id="spots">SPOTS</a></li>
+	<li><a href="#" id="services">SERVICES</a></li>
+	<li><a href="#" id="credits">CREDITS</a></li>
+	<li><a href="#" id="actors">ACTORS/MODELS</a></li>
+	<li><a href="#" id="contact">CONTACT/AFFILIATES</a></li>
 	<br>
-	<li><a href="http://www.arizonacastingconnection.com/projects.html">PROJECT LOG-IN</a></li>
+	<li><a href="#" id="projects">PROJECT LOG-IN</a></li>
 </ul>
 
-<div id="info_div">
-    <img id="home_img" src="http://www.arizonacastingconnection.com/images/homepage-left.jpg"/>
+<div id="video_player_div" class="content_change">
+	<video id="video_player" class="video-js vjs-default-skin" width="500" height="300" ></video>
+	<br>
+	<!--
+	<span class="video_info">Client: </span><span id="client" class="video_info_change"></span><br>
+	<span class="video_info">Director: </span><span id="director" class="video_info_change"></span><br>
+	<span class="video_info">Production Co: </span><span id="production" class="video_info_change"></span><br>
+	<span class="video_info">Agency: </span><span id="agency" class="video_info_change"></span>
+	-->
+</div>
+<div id="bio_div" class="content_change">
+    <img id="home_img" src="images/homepage-left.jpg"/>
 
     <p id="home_text">
       <font color="#3cbaeb" size="5">Need Talent?</font><br><br>
@@ -302,7 +366,15 @@ function UpdateImages(cat)
         pool. No more "what if" Factor. We'll put you with<br>
         the best talent in Arizona.
     </p>
-  </div>
+</div>
+<div id="actors_div" class="content_change">
+
+
+
+</div>  
+  
+  
+  
 </div>
 
 <div id="wrap">
@@ -311,11 +383,11 @@ function UpdateImages(cat)
             <div class="scrollContainer">
               <div class="panel" id="first">
                 <ul>
-                  <li><a href="spots.html"><img src="images/Coca-Cola-belly-120X90.jpg" alt="Coca Cola" /></a></li>
-                  <li><a href="spots.html"><img src="images/F-150-Truck-worker-120X90.jpg" alt="Ford F-150" /></a></li>
-                  <li><a href="spots.html"><img src="images/VW-Autobahn-1-3guys-120X90.jpg" alt="Volkswagon" /></a></li>
-                  <li><a href="spots.html"><img src="images/Culvers-Happy-family-120X90.jpg" alt="Culver's" /></a></li>
-                  <li><a href="spots.html"><img src="images/Rexona-1-bullLick-120X90.jpg" alt="Rexona" /></a></li>
+                  <li><img src="images/Coca-Cola-belly-120X90.jpg" alt="Coca Cola" /></li>
+                  <li><img src="images/F-150-Truck-worker-120X90.jpg" alt="Ford F-150" /></li>
+                  <li><img src="images/VW-Autobahn-1-3guys-120X90.jpg" alt="Volkswagon" /></li>
+                  <li><img src="images/Culvers-Happy-family-120X90.jpg" alt="Culver's" /></li>
+                  <li><img src="images/Rexona-1-bullLick-120X90.jpg" alt="Rexona" /></li>
 				  
                 </ul>
               </div>
@@ -349,48 +421,6 @@ function UpdateImages(cat)
         </div>
       </div>
 
-<!--
-<div id="wrap">
-        <div id="slider">
-          <div class="scroll">
-            <div class="scrollContainer">
-              <div class="panel" id="first">
-                <ul>
-                  <li><a href="spots.html"><img src="images/Coca-Cola-belly-120X90.jpg" alt="Coca Cola" /></a></li>
-                  <li><a href="spots.html"><img src="images/F-150-Truck-worker-120X90.jpg" alt="Ford F-150" /></a></li>
-                  <li><a href="spots.html"><img src="images/VW-Autobahn-1-3guys-120X90.jpg" alt="Volkswagon" /></a></li>
-                  <li><a href="spots.html"><img src="images/Culvers-Happy-family-120X90.jpg" alt="Culver's" /></a></li>
-                  <li><a href="spots.html"><img src="images/Rexona-1-bullLick-120X90.jpg" alt="Rexona" /></a></li>
-                </ul>
-              </div>
-              <div class="panel" id="second">
-                <ul>
-                  <li><a href="spots.html"><img src="images/FLF Classic Sampler-moped-couple-120X90.jpg" alt="Fazoli's" /></a></li>
-                  <li><a href="spots.html"><img src="images/Justin & Kelly_HD-DogBottle-120X90.jpg" alt="Desert Schools Federal Credit Union" /></a></li>
-                  <li><a href="spots.html"><img src="images/Ak Chin-Norm-120X90.jpg" alt="Ak Chin" /></a></li>
-                  <li><a href="spots.html"><img src="images/Prop200_JustTheFacts-120X90.jpg" alt="Proposition 200" /></a></li>
-                  <li><a href="spots.html"><img src="images/FLF Pizzettis-3teens-120X90.jpg" alt="Fazoli's" /></a></li>
-                </ul>
-              </div>
-              <div class="panel" id="third">
-                <ul>
-                  <li><a href="spots.html"><img src="images/M&I-82109-katieCU-120X90.jpg" alt="M & I Bank" /></a></li>
-                  <li><a href="spots.html"><img src="images/Lance-120X90.jpg" alt="Desert Schools Federal Credit Union" /></a></li>
-                  <li><a href="spots.html"><img src="images/Ricky & Daz cowboys2-120X90.jpg" alt="Ricky & Daz" /></a></li>
-                  <li><a href="spots.html"><img src="images/Tchaikovsky-CD-82009-3guys3-120X90.jpg" alt="Tchaikovsky" /></a></li>
-                  <li><a href="spots.html"><img src="images/The_Address4X3-12090.jpg" alt="The Address" /></a></li>
-                </ul>
-              </div>
-              <div class="panel" id="fourth">
-                <ul>
-                  <li><a href="spots.html"><img src="images/PowerPuffGirls-opening-120X90.jpg" /></a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
--->
 
 	<div id="carousel_wrap">
 

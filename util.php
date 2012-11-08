@@ -180,7 +180,12 @@ $(document).ready(function()
 	
 	GetSessionData();
 
+
+	$('.cat_video_list').css('list-style-type', 'circle');
 	
+	$('#video_list1 li').addClass('shadow1');
+	
+	SelectCategory(0);
 	
 	//click on video in main video list
 	$('#video_list1 li').live('click', function() { 
@@ -199,9 +204,14 @@ $(document).ready(function()
 		//$('.vjs-poster').attr("src","images/Coca-Cola-belly-120X90.jpg");
 		//$('.vjs-poster').show();
 	});
+
+	$('#del_video').click(function() 
+	{ 
+		DeleteVideo(g_sel_vid['indx'], g_sel_vid['name']);
+	});
 	
 	//click on a category
-	$('#cats_list li a').live('click', function() {
+	$('.cat_name').live('click', function() {
     
 		SelectCategory($(this).parent().index());
     });
@@ -218,10 +228,30 @@ $(document).ready(function()
 
 	});
 	
-
-	$("#btn2").click(function(){
+	$('#upload_button').click(function() 
+   { 
+		bar.css({'visibility':'hidden'});
+		percent.css({'visibility':'hidden'});
+		$('#upfile').click();
+   });
+   
+	$('#upfile').change(function() {
 		
-		$("#videos_div").clone().appendTo("#fragment-2");
+		//http://labs.abeautifulsite.net/archived/jquery-alerts/demo/
+		
+		/*
+		var r=confirm("Press a button!");
+		if (r == true)
+  {
+  x="You pressed OK!";
+  }
+else
+  {
+  x="You pressed Cancel!";
+  }*/
+		$('#form_video_upload').submit();
+		
+		//alert('Handler for .change() called.');
 	});
 
 	$('#save_vid_info').click(function() 
@@ -252,7 +282,7 @@ $(document).ready(function()
 		
    });
    
-	$('#del_video').click(function() 
+	$('#del_cat_video').click(function() 
    { 
 		//!! mouse over pop up input box??
 		//console.log("jjjjjjjjj");
@@ -270,6 +300,8 @@ $(document).ready(function()
 		//!! disable submit button
 		beforeSend: function() {
 			status.empty();
+			bar.css({'backgroundColor':'white', 'visibility':'visible'});
+			percent.css({'visibility':'visible'});
 			var percentVal = '0%';
 			bar.width(percentVal);
 			percent.html(percentVal);
@@ -293,7 +325,7 @@ $(document).ready(function()
 			if (!data || data['error'])
 			{
 				//!! need to reset back again
-				bar.css('backgroundColor', 'white');
+								
 				percent.css({'font-size':'10px', 'left':'0px'});
 				
 				if (!data)
@@ -312,6 +344,7 @@ $(document).ready(function()
 				var percentVal = '100%';
 				bar.width(percentVal);
 				percent.html(percentVal);
+				
 				//!! update progress bar here
 				for (i=0; i < data.length; i++)
 				{
@@ -522,14 +555,23 @@ function UTDeleteVid()
 
 function SelectCategory(indx)
 {		
-	$('#cats_list li a').css('backgroundColor', 'white');
-	$('#cats_list li a:eq('+indx+')').css('backgroundColor', '#EEE5DD');
-	
 	$('.cat_video_list').hide(1);
-	$('#cats_list ul:eq('+indx+')').show("slow", "swing");
 	
+	$('#cats_list ul:eq('+indx+')').show("slow", "swing", function() {
+
+		var pos = $('#cats_list li .cat_name:eq('+indx+')').position();
+	
+			$('#cat_circle').animate({
+				top: pos.top+25,
+				left: pos.left+25,
+			});
+
+  });
+  
+
 	g_sel_cat['indx'] = indx;
-	g_sel_cat['name'] = $('#cats_list li a:eq('+indx+')').text();
+	g_sel_cat['name'] = $('#cats_list li .cat_name:eq('+indx+')').text();
+		
 }
 
 function AddImage(filename)
@@ -552,9 +594,9 @@ function AddVideo(filename)
 		{
 			if (result != "error")
 			{
-				//add to top of html list
+				//add to html list
 				$('#video_list1').append("<li><span class='vid_name'></span><span class='vid_file'>" + filename + "</span></li>");
-				
+				$('#video_list1 li:last').addClass('shadow1');
 				
 				//add to js objects
 				g_vids[g_vids.length] = {};
@@ -588,6 +630,10 @@ function DeleteVideo(indx, name)
 				
 				//remove object 
 				g_vids.splice(indx, 1);
+				
+				//remove from vidcat array
+				//for (i=0; i < g_vi
+				//$('#cats_list > li:eq('+sel_cat["indx"]+') ul li:eq('+sel_vid["indx"]+')').remove();
 			}
 		} 
     });
@@ -649,14 +695,14 @@ function setinfo()
   
 function SelectVideo(indx)
 {
-	$('#video_list1 li').css('backgroundColor', 'white');
-	$('#video_list1 li:eq('+indx+')').css('backgroundColor', '#e6dace');
+	$('#video_list1 li').removeClass('shadow2').addClass('shadow1');
+	$('#video_list1 li:eq('+indx+')').addClass('shadow2');
 }
 
 function SelectCatVideo(catindx, vidindx)
 {
-	$('.cat_video_list li').css('backgroundColor', 'white');
-	$('.cat_video_list:eq('+catindx+') li:eq('+vidindx+')').css('backgroundColor', '#e6dace');
+	$('.cat_video_list li').removeClass('shadow2')
+	$('.cat_video_list:eq('+catindx+') li:eq('+vidindx+')').addClass('shadow2');
 }
 
 function SetVideoFields(indx)
@@ -706,7 +752,7 @@ function SaveVidInfo(indx)
 				g_vids[indx]['image'] = img;
 				
 				//update video list name
-				$('#video_list1 > li span.vid_name:eq('+indx+')').text(name);
+				$('#video_list1 > li span.vid_name:eq('+indx+')').text(" " + name);
 			}
 		} 
     });
@@ -727,7 +773,7 @@ function CreateCategory(name)
 				$('.cat_video_list').hide(1);
 				
 				//insert new cat to top of list
-				$('#cats_list').append('<li><a>' + name + '</a><ul class="cat_video_list">');
+				$('#cats_list').append('<li><span class="cat_name">' + name + '</span><ul class="cat_video_list">');
 				
 				//add to js objects
 				g_cats[g_cats.length] = {};
@@ -752,7 +798,7 @@ function DeleteCategory(indx, name)
 			if (result != "error")
 			{ 
 				//remove in html list 
-				$('#cats_list li a:eq('+indx+')').parent().empty().remove();
+				$('#cats_list li .cat_name:eq('+indx+')').parent().empty().remove();
 				
 				//remove from array
 				g_cats.splice(indx, 1);
@@ -837,14 +883,37 @@ function DelCatVideo(sel_cat, sel_vid)
 	
 		<!-- file upload -->
 		<div id="video_upload_div">
+		<form action="util_op.php" method="POST" enctype="multipart/form-data" id="form_video_upload">
+		<div id="upload_button" ><span>Upload Videos/Photos</span></div>
+		<div style='height: 0px;width:0px; overflow:hidden;'>
+		<input id="upfile" type="file" value="upload" name="videos[]" multiple />
+		</div>
+		<!--<input type="submit" value='submit' >-->
+		</form>
+		
+		<div class="progress">
+			<div class="bar"></div >
+			<div class="percent">0%</div >
+		</div>
+		
+		</div>
+
+		
+		
+		
+		<!--
+		<div id="video_upload_div">
 		<form action="util_op.php" method="post" enctype="multipart/form-data" id="form_video_upload">
 			<input type="file" name="videos[]" id="video_upload" multiple>
 			<input type="submit" value="upload" id="video_upload_button">
 		</form>
+				
+			<input type="submit" value="upload" id="video_upload_button">
+		
 			<div class="bar"></div >
 			<div class="percent">0%</div >
 		</div>
-    
+		-->
 	
 	<!--
 		<div class="progress">
@@ -857,12 +926,13 @@ function DelCatVideo(sel_cat, sel_vid)
 		<div id="videos_div">
 			<div id="video_list1_div">
 				<span class="video_name_hdr">Name</span><span class="video_file_hdr">File</span>
+				<div id="del_video_div"><span>Delete</span><span id="del_video"> Video</span></div>
 				<ul id="video_list1">
 					
 					<?php
 						foreach($g_vids as $key=>$value)
 						{
-							echo "<li><span class='vid_name'>{$g_vids[$key]['name']}</span><span class='vid_file'>{$g_vids[$key]['filename']}</span></li>";
+							echo "<li><span class='vid_name'>&nbsp;{$g_vids[$key]['name']}</span><span class='vid_file'>{$g_vids[$key]['filename']}</span></li>";
 							print "\n";
 							print "\t\t\t\t\t\t\t";
 						}
@@ -898,32 +968,21 @@ function DelCatVideo(sel_cat, sel_vid)
 			<input type="text" id="video_image_input" class="vid_info_input" name="video_image_input" ><br>			
 			-->
 				
-			<!--
-			<label for="video_image">Image:</label>
-			<form action="#" class="example">
-			<div class="fileinputs">
-				<input type="file" class="file" id="video_image" />
-				<div class="fakefile">
-					<input />
-					<img src="button_select.gif" />
-				</div>
-			</div>
-			</form>	
-			-->
 		</div>
 
 		<div id="add_video_div">
 		<span id="add_cat_video">Add Video</span><br>
 		<span>></span>
 		</div>
-		<div id="del_video_div">
+		<div id="del_cat_video_div">
 		<span>Delete</span>
-		<span id="del_video">Video |</span>
+		<span id="del_cat_video">Video </span><span> | </span>
 		<span id="del_cat"> Category</span><br>
 		</div>
 		
 		
 	<div id="cats_list_div">
+			<div id="cat_circle"></div>
 			<label for="new_cat_name" id="add_cat">Create New</label>
 			<input type="text" id="new_cat_name" value=""><br>
 			<ul id="cats_list">
@@ -931,7 +990,7 @@ function DelCatVideo(sel_cat, sel_vid)
 				foreach($g_cats as $cat)
 				{
 					echo "<li>";
-					echo "<a>{$cat['name']}</a>";
+					echo "<span class='cat_name'>{$cat['name']}</span>";
 					echo "<ul class='cat_video_list'>";
 											
 					foreach($g_vidcat as $vidcat)
@@ -961,23 +1020,22 @@ function DelCatVideo(sel_cat, sel_vid)
 		
     </div>
     <div id="fragment-2">
-		<div id="videos_div">
-			<div id="video_list1_div">
-				<span class="video_name_hdr">Name</span><span class="video_file_hdr">File</span>
-				<ul id="video_list1">
-					
-					<?php
-						foreach($g_vids as $key=>$value)
-						{
-							echo "<li><span class='name'>{$g_vids[$key]['name']}</span><span class='file'>{$g_vids[$key]['filename']}</span></li>";
-							print "\n";
-							print "\t\t\t\t\t\t\t";
-						}
-					?>
-				</ul>
-			</div>
-        </div>
+	
+	
+			<!--
+		<div id="video_upload_div">
+		<form action="util_op.php" method="post" enctype="multipart/form-data" id="form_video_upload">
+			<input type="file" name="videos[]" id="video_upload" multiple>
+			<input type="submit" value="upload" id="video_upload_button">
+		</form>
+				
+			<input type="submit" value="upload" id="video_upload_button">
 		
+			<div class="bar"></div >
+			<div class="percent">0%</div >
+		</div>
+		-->
+
 			
 		
     </div>

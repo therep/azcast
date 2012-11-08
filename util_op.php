@@ -1,6 +1,7 @@
 <?php
 //session_start();
 
+//CX466500728CA
 
 //multiple row insert
 //http://stackoverflow.com/questions/779986/insert-multiple-rows-via-a-php-array-into-mysql
@@ -170,6 +171,21 @@ if ($_POST['jquery_op'] == savevideo)
 
 if ($_POST['jquery_op'] == deletevideo)
 {
+	//delete all entries from categories
+	$query = "DELETE a 
+			  FROM vidcat a
+			  INNER JOIN vids b
+			  ON  a.vid_id = b.video_id
+			  WHERE b.filename='".$_POST['filename']."'"; 
+
+	//!! not error? just empty
+	if (!SQLSetData($query))
+	{
+		pr("Can't delete data : " . mysql_error());
+		echo json_encode("error");
+		return false;
+	}
+
 	//delete video
 	$query = "DELETE FROM vids
 			  WHERE filename='".$_POST['filename']."'"; 
