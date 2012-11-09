@@ -180,10 +180,11 @@ $(document).ready(function()
 	
 	GetSessionData();
 
-
 	$('.cat_video_list').css('list-style-type', 'circle');
 	
 	$('#video_list1 li').addClass('shadow1');
+
+	$('#cat_circle').hide();
 	
 	SelectCategory(0);
 	
@@ -213,7 +214,10 @@ $(document).ready(function()
 	//click on a category
 	$('.cat_name').live('click', function() {
     
-		SelectCategory($(this).parent().index());
+		if ($(this).parent().index() != g_sel_cat['indx'])
+		{
+			SelectCategory($(this).parent().index());
+		}
     });
 
 	//click on video in a category
@@ -260,19 +264,23 @@ else
 		
    });
 
+   	$('.cat_name').change(function() {
+	
+		var indx = $(this).parent().index();
+		UpdateCategory(g_cats[indx]['name'], $(this).val());
+	});
+	
 	$('#add_cat').click(function() 
    { 
 		var name = document.getElementById('new_cat_name').value;
 		CreateCategory(name);
    });
 
+	//add video to a category
 	$('#add_cat_video').click(function() 
-   { 
-		//!! mouse over pop up input box??
-		
+	{ 
 		AddCatVideo(g_sel_cat, g_sel_vid);
-		
-   });
+	});
 
 	$('#del_cat').click(function() 
    { 
@@ -295,6 +303,7 @@ else
 	var status = $('#status');
    
 	$('#form_video_upload').ajaxForm({
+		
 		data: {jquery_op: 'upload'},
 		dataType: 'json', 
 		//!! disable submit button
@@ -310,15 +319,21 @@ else
 			var percentVal = percentComplete + '%';
 			bar.width(percentVal);
 			percent.html(percentVal);
-			//console.log(percentVal, position, total);
 		},
-		/*
+		error: function(request, status, error) {
+            console.log(request.responseText);  
+			var max = (g_max_upload < g_max_post) ? g_max_upload : g_max_post;
+			percent.html("");
+			//bar.html("error uploading, total max upload size is " + max + "M bytes");
+			bar.html("error: total max upload size possibly exceeded");
+
+		},
 		complete: function(data) {
 			//status.html(xhr.responseText);
-			var percentVal = '100%';
-			bar.width(percentVal);
+			//var percentVal = '100%';
+			//bar.width(percentVal);
 			//percent.html(percentVal);
-		},*/
+		},
 		success: function(data)          
 		{
 			
@@ -326,7 +341,8 @@ else
 			{
 				//!! need to reset back again
 								
-				percent.css({'font-size':'10px', 'left':'0px'});
+				//percent.css({'font-size':'10px', 'left':'0px'});
+				//percent.css({'font-size':'10px'});
 				
 				if (!data)
 				{
@@ -554,24 +570,30 @@ function UTDeleteVid()
 }
 
 function SelectCategory(indx)
-{		
+{	
+	$('.cat_name').blur();
+	$('.cat_name').css('cursor', 'pointer');
+	
 	$('.cat_video_list').hide(1);
 	
 	$('#cats_list ul:eq('+indx+')').show("slow", "swing", function() {
 
+		//!! get rid of #cats_list li
 		var pos = $('#cats_list li .cat_name:eq('+indx+')').position();
 	
 			$('#cat_circle').animate({
-				top: pos.top+25,
+				top: pos.top+27,
 				left: pos.left+25,
+			}, function() {
+				//$('.cat_name:eq('+indx+')').css('cursor', 'text');
+				$('#cat_circle').show();
 			});
-
+			
+			
   });
-  
-
+	
 	g_sel_cat['indx'] = indx;
-	g_sel_cat['name'] = $('#cats_list li .cat_name:eq('+indx+')').text();
-		
+	g_sel_cat['name'] = $('.cat_name:eq('+indx+')').val();
 }
 
 function AddImage(filename)
@@ -602,12 +624,6 @@ function AddVideo(filename)
 				g_vids[g_vids.length] = {};
 				g_vids[g_vids.length-1].name = "unset";
 				g_vids[g_vids.length-1].filename = filename;
-				
-				//add to top of list
-				//!! test, double check this usage
-				//!! use splice
-				//g_vids.unshift({});
-				//g_vids[0].filename = filename;
 			}
 		} 
     });
@@ -625,15 +641,24 @@ function DeleteVideo(indx, name)
 		{
 			if (result != "error")
 			{
-				//remove in html list 
+				//remove from html video list 
 				$('#video_list1 li:eq('+indx+')').remove();
+				
+				//remove from html cats list
+				for (i=0; i < $('#cats_list ul').length; i++)
+				{
+					for (j=0; j < $('.cat_video_list:eq('+j+') li').length; j++)
+					{
+						if ($('.cat_video_list:eq('+i+') li:eq('+j+')').text() == name)
+						{
+							$('.cat_video_list:eq('+i+') li:eq('+j+')').remove();
+							break;
+						}
+					}	
+				}
 				
 				//remove object 
 				g_vids.splice(indx, 1);
-				
-				//remove from vidcat array
-				//for (i=0; i < g_vi
-				//$('#cats_list > li:eq('+sel_cat["indx"]+') ul li:eq('+sel_vid["indx"]+')').remove();
 			}
 		} 
     });
@@ -773,7 +798,7 @@ function CreateCategory(name)
 				$('.cat_video_list').hide(1);
 				
 				//insert new cat to top of list
-				$('#cats_list').append('<li><span class="cat_name">' + name + '</span><ul class="cat_video_list">');
+				$('#cats_list').append("<li class='cat_head'><input type='text' class='cat_name' value='" + name + "'</input><ul class='cat_video_list'></ul></li>");
 				
 				//add to js objects
 				g_cats[g_cats.length] = {};
@@ -798,10 +823,42 @@ function DeleteCategory(indx, name)
 			if (result != "error")
 			{ 
 				//remove in html list 
-				$('#cats_list li .cat_name:eq('+indx+')').parent().empty().remove();
+				$('.cat_head:eq('+indx+') > *').remove();
+				$('.cat_head:eq('+indx+')').remove();
+				
 				
 				//remove from array
 				g_cats.splice(indx, 1);
+				
+				SelectCategory(g_cats.length - 1);
+			}
+		} 
+    });
+}
+
+function UpdateCategory(orig, name)
+{
+	console.log("orig " + orig + "new " + name);
+	
+    $.ajax({     
+		type: "POST",
+		url: 'util_op.php',                  
+		data: {jquery_op:'updatecategory', name:name, orig:orig},
+		dataType: 'json',
+		
+		success: function(result)          
+		{
+			if (result != "error")
+			{
+				//update array
+				for (i=0; i < g_cats.length; i++)
+				{
+					if (g_cats[i]['name'] == orig)
+					{
+						g_cats[i].name = name;
+						break;
+					}
+				}
 			}
 		} 
     });
@@ -872,7 +929,7 @@ function DelCatVideo(sel_cat, sel_vid)
 	-->		
 			
 			
-<div id="tabs">
+<div id="tabs" style='width: 900px; left:100px'>
     <ul>
         <li><a href="#fragment-1"><span>Videos</span></a></li>
         <li><a href="#fragment-2"><span>Photos</span></a></li>
@@ -989,8 +1046,9 @@ function DelCatVideo(sel_cat, sel_vid)
 				<?php
 				foreach($g_cats as $cat)
 				{
-					echo "<li>";
-					echo "<span class='cat_name'>{$cat['name']}</span>";
+					echo "<li class='cat_head'>";
+					//echo "<span class='cat_name'>{$cat['name']}</span>";
+					echo "<input type='text' class='cat_name' value='{$cat['name']}'</input>";
 					echo "<ul class='cat_video_list'>";
 											
 					foreach($g_vidcat as $vidcat)
@@ -1041,6 +1099,7 @@ function DelCatVideo(sel_cat, sel_vid)
     </div>
 	
 </div>
+
 <!--
 		<div id="video_play">
 		

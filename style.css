@@ -13,6 +13,7 @@
 		
 	  a.current_link {color:#3cbaeb;}
 
+	 
 	  #content_div {
 
     		position: absolute;	
@@ -233,7 +234,7 @@
 			
 		}
 		
-		input, select {
+		input:not(.cat_name), select {
 			padding: 0px;
 			font-size: 15px;
 			text-shadow: 0px 1px 0px #fff;
@@ -396,6 +397,12 @@
 			width: 220px;
 		}
 		
+		.cat_name {
+			cursor: pointer;
+			border: none;
+		}
+
+		
 		#cats_list_div {
 			position: absolute;
 			left: 520px;
@@ -405,7 +412,7 @@
 			margin: 0px;
 			
 
-			font-size: 13px;
+			font-size: 12px;
 			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;					
 			cursor: pointer;
 			

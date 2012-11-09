@@ -54,6 +54,7 @@ if ($_POST['jquery_op'] == upload)
    $target_path = $destination_path . basename( $_FILES['myfile']['name']);
    */
 	
+	return true;
 
 }
 
@@ -93,22 +94,31 @@ if ($_GET['jquery_op'] == addcatvideo)
 
 if ($_GET['jquery_op'] == delcatvideo)
 {
-	//!! fix query
-	/*
-	//delete video entry from this category
+/*
+	//delete from vidcat
 	$query = "DELETE a 
 			  FROM vidcat a
-			  INNER JOIN vids b, cats c
-			  ON  a.vid_id = b.vid_id
-			  WHERE c.name='".$_GET['cat']."' 
-			  and b.filename='".$_GET['file']."'";
+			  INNER JOIN cats b
+			  ON  a.vid_id = b.video_id
+			  WHERE b.filename='".$_GET['filename']."'
+			  and vids.filename='".$_GET['file']."'"; 
 
+	//!! not error? just empty
 	if (!SQLSetData($query))
 	{
-		pr("Can\'t delete data : " . mysql_error());
+		pr("Can't delete data : " . mysql_error());
+		echo json_encode("error");
 		return false;
-	}
-	*/
+	}*/
+/*	
+DELETE a 
+FROM vidcat a
+INNER JOIN vids b, cats c
+ON  a.vid_id = b.video_id and a.cat_id = c.cat_id
+WHERE b.filename = '06 Coca Cola.flv'
+and c.name = 'category 10'
+*/
+
 	return true;
 }
 
@@ -193,6 +203,22 @@ if ($_POST['jquery_op'] == deletevideo)
 	if (!SQLSetData($query))
 	{
 		pr("Can't delete data : " . mysql_error());
+		echo json_encode("error");
+		return false;
+	}
+	
+	return true;
+}
+
+if ($_POST['jquery_op'] == updatecategory)
+{
+	$query = "UPDATE cats
+			 SET name='".$_POST['name']."'
+			 WHERE name='".$_POST['orig']."'";
+			 
+	if (!SQLSetData($query))
+	{
+		pr("Can't set data : " . mysql_error());
 		echo json_encode("error");
 		return false;
 	}
@@ -301,7 +327,7 @@ function OpenDatabase()
 	$pass = "princess";
 	$database = "azcasting";
 
-	//$host = "jlynnecosmetics.com";
+	//$host = "localhost";
 	//$user = "jlynneco_ward";
 	//$pass = "big20mac";
 	//$database = "jlynneco_db1";
