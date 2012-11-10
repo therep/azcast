@@ -891,9 +891,9 @@ function AddCatVideo(sel_cat, sel_vid)
 function DelCatVideo(sel_cat, sel_vid)
 {
     $.ajax({     
-		type: "GET",
-		url: 'util_op.php',                  
-		data: "jquery_op=delcatvideo&cat=" + sel_cat['name'] + "&file=" + sel_vid['name'],
+		type: "POST",
+		url: 'util_op.php',  
+		data: {jquery_op:'delcatvideo', cat:sel_cat['name'], filename:sel_vid['name']},
 		dataType: 'json',
 		
 		success: function(result)          

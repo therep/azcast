@@ -92,16 +92,17 @@ if ($_GET['jquery_op'] == addcatvideo)
 	return true;
 }
 
-if ($_GET['jquery_op'] == delcatvideo)
+if ($_POST['jquery_op'] == delcatvideo)
 {
-/*
 	//delete from vidcat
-	$query = "DELETE a 
-			  FROM vidcat a
-			  INNER JOIN cats b
-			  ON  a.vid_id = b.video_id
-			  WHERE b.filename='".$_GET['filename']."'
-			  and vids.filename='".$_GET['file']."'"; 
+	$query = "DELETE vidcat
+			  FROM vidcat
+			  INNER JOIN cats
+			  ON  vidcat.cat_id = cats.cat_id
+			  INNER JOIN vids
+			  ON  vidcat.vid_id = vids.video_id
+			  WHERE cats.name='".$_POST['cat']."' 
+			  and vids.filename='".$_POST['filename']."'";
 
 	//!! not error? just empty
 	if (!SQLSetData($query))
@@ -109,16 +110,8 @@ if ($_GET['jquery_op'] == delcatvideo)
 		pr("Can't delete data : " . mysql_error());
 		echo json_encode("error");
 		return false;
-	}*/
-/*	
-DELETE a 
-FROM vidcat a
-INNER JOIN vids b, cats c
-ON  a.vid_id = b.video_id and a.cat_id = c.cat_id
-WHERE b.filename = '06 Coca Cola.flv'
-and c.name = 'category 10'
-*/
-
+	}
+	
 	return true;
 }
 
@@ -322,15 +315,21 @@ function SQLGetData($query)
    
 function OpenDatabase()
 {
-	$host = "localhost";
-	$user = "root";
-	$pass = "princess";
-	$database = "azcasting";
 
-	//$host = "localhost";
-	//$user = "jlynneco_ward";
-	//$pass = "big20mac";
-	//$database = "jlynneco_db1";
+	if (strstr($_SERVER['SERVER_NAME'], "localhost"))
+	{
+		$host = "localhost";
+		$user = "root";
+		$pass = "princess";
+		$database = "azcasting";
+	}
+	else if (strstr($_SERVER['SERVER_NAME'], "jlynnecosmetics"))
+	{
+		$host = "localhost";
+		$user = "jlynneco_ward";
+		$pass = "big20mac";
+		$database = "jlynneco_db1";
+	}
 	
 	if (!($con = mysql_connect($host,$user,$pass)))
 	{

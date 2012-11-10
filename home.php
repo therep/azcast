@@ -250,6 +250,8 @@ jQuery(document).ready(function() {
 	
 	$('.category').click(function() 
 	{
+		console.log("jjjjjjjjjjjjjjj");
+		
 		$('p.category').css('color', '#969696');
 		$(this).css('color', '#3cbaeb');
 		
