@@ -115,7 +115,7 @@
 		
 		#fragment-1, #fragment-2 {
 			/*postion: absolute;*/
-			height: 500px;
+			height: 600px;
 		
 		}
 
@@ -168,9 +168,15 @@
 	overflow:scroll;
 	overflow-x:hidden;	
 	height: 400px;
-	
-	
 	}
+
+	#video_player_util_div {
+			position: absolute;	
+			padding: 0px;
+        top: 60px;
+        right: 20px;
+	}
+
 	
 		#video_list1 li, #video_list2 li {	
 			/*list-style-image: url('sqpurple.gif');*/
@@ -223,12 +229,12 @@
 		
 		#video_info_div {
 			position: absolute;
-			left: 500px;
-			top: 175px;
+			left: 488px;
+			top: 270px;
 			width: 350px;
 			padding: 0px;
 			margin: 0px;
-			font-size: 13px;
+			font-size: 12px;
 			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;			
 			/*background-color: #e6dace;*/			
 			
@@ -262,11 +268,13 @@
 		   -webkit-box-shadow: inset 0 0 10px #111188;
 		   box-shadow:         inset 0 0 10px #111188;
 		}
+		
 			.vid_info_input {
 			position: absolute;
 			left: 100px;
 			width: 220px;
-			}
+
+		}
 			
 			#video_upload_div {
 				
@@ -370,12 +378,12 @@
 			position: absolute;
 			text-align: center;
 			left: 500px;
-			top: 400px;
+			top: 495px;
 			padding: 0px;
 			margin: 0px;
 			
 
-			font-size: 13px;
+			font-size: 12px;
 			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;					
 			
 		
@@ -385,7 +393,7 @@
 			position: absolute;
 			text-align: center;
 			left: 640px;
-			top: 330px;
+			top: 400px;
 			padding: 0px;
 			margin: 0px;
 			font-size: 12px;
@@ -406,7 +414,7 @@
 		#cats_list_div {
 			position: absolute;
 			left: 520px;
-			top: 350px;
+			top: 420px;
 			width: 300px;
 			padding: 0px;
 			margin: 0px;
@@ -570,9 +578,7 @@ input.file {
 
         
       }
-      
 	  
- 
 	  
       #video_player_div {
 			position: absolute;	

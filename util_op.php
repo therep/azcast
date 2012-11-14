@@ -219,12 +219,12 @@ if ($_POST['jquery_op'] == updatecategory)
 	return true;
 }
 
-if ($_GET['jquery_op'] == savevideodata)
+if ($_POST['jquery_op'] == savevideodata)
 {
 	$query = "UPDATE vids
-			 SET name='".$_GET['name']."', client='".$_GET['client']."', director='".$_GET['director'].
-			 "', production_co='".$_GET['production']."', image='".$_GET['image']."', agency='".$_GET['agency'].
-			 "' WHERE filename='".$_GET['filename']."'";
+			 SET name='".$_POST['name']."', client='".$_POST['client']."', director='".$_POST['director'].
+			 "', production_co='".$_POST['production']."', image='".$_POST['image']."', agency='".$_POST['agency'].
+			 "' WHERE filename='".$_POST['filename']."'";
 			 
 	if (!SQLSetData($query))
 	{

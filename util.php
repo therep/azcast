@@ -144,7 +144,7 @@ function GetInfo()
 
 var g_max_upload;
 var g_max_post;
-var g_video1;
+var g_video;
 
 var g_sel_vid = {};
 var g_sel_cat = {};
@@ -158,6 +158,11 @@ var g_vidcat = {};
 var g_count = [];
 var g_intvl = [];
 
+//!! demo
+var g_vidinfo = [];
+var g_catinfo = [];
+var g_intvl;
+var g_count = 0;
 
 main_util();
 
@@ -170,15 +175,238 @@ function main_util()
 	
 	
 }
+
+function SetDemoCatInfo()
+{
+	CreateCategory('Autos');
+	CreateCategory('Food');
+	CreateCategory('Business');
+	CreateCategory('Government');
+	CreateCategory('Personal');
+	CreateCategory('Entertainment');
+}
+
+//!! if ' in name, data not saved!!!!!!!!
+function SetDemoVidInfo()
+{
+	var i = 0;
+	
+	g_vidinfo[i] = {};
+	
+	g_vidinfo[i]['name'] = 'Coca Cola';
+	g_vidinfo[i]['client'] =  'Coca Cola';
+	g_vidinfo[i]['director'] =  'Vogel Villar-Rios';
+	g_vidinfo[i]['production'] =  'Believe Media';
+	g_vidinfo[i]['agency'] =  'Berlin Cameron';
+	g_vidinfo[i]['image'] = 'Coca-Cola-belly-120X90.jpg';
+	g_vidinfo[i]['filename'] = '06 Coca Cola.flv';
+
+	i++;
+	g_vidinfo[i] = {};
+	g_vidinfo[i]['name'] = 'Ford F-150';
+	g_vidinfo[i]['client'] =  'Ford';
+	g_vidinfo[i]['director'] =  'Will van der Vlugt';
+	g_vidinfo[i]['production'] =  'Caramel Pictures/VuWest';
+	g_vidinfo[i]['agency'] =  'Zubi Advertising';
+	g_vidinfo[i]['image'] = 'F-150-Truck-worker-120X90.jpg';
+	g_vidinfo[i]['filename'] = '07 F-150_HardWork_82109.flv';
+
+	i++;
+	g_vidinfo[i] = {};
+	g_vidinfo[i]['name'] = 'Volkswagen';
+	g_vidinfo[i]['client'] =  'Volkswagen';
+	g_vidinfo[i]['director'] =  'Matthieu Mantovani';
+	g_vidinfo[i]['production'] =  'Films Traffik';
+	g_vidinfo[i]['agency'] =  'Palm Communication';
+	g_vidinfo[i]['image'] = 'VW-Autobahn-1-3guys-120X90.jpg';
+	g_vidinfo[i]['filename'] = '020 VW-82109.flv';
+
+	i++;
+	g_vidinfo[i] = {};
+	g_vidinfo[i]['name'] = 'Culvers';
+	g_vidinfo[i]['client'] =  'Culvers';
+	g_vidinfo[i]['director'] =  'Steve Diller';
+	g_vidinfo[i]['production'] =  'MJZ Productions';
+	g_vidinfo[i]['agency'] =  'Marc USA';
+	g_vidinfo[i]['image'] = 'Culvers-Happy-family-120X90.jpg';
+	g_vidinfo[i]['filename'] = '019 Culvers-Happy-4-82609.flv';
+	
+	i++;
+	g_vidinfo[i] = {};
+	g_vidinfo[i]['name'] = 'Rexona';
+	g_vidinfo[i]['client'] =  'Rexona';
+	g_vidinfo[i]['director'] =  'Pucho';
+	g_vidinfo[i]['production'] =  'Believe Media';
+	g_vidinfo[i]['agency'] =  'Vega Olmos Ponce / Lowe';
+	g_vidinfo[i]['image'] = 'Rexona-1-bullLick-120X90.jpg';
+	g_vidinfo[i]['filename'] = '014 Rexona-1-82109.flv';
+	
+	i++;
+	g_vidinfo[i] = {};
+	g_vidinfo[i]['name'] = "Fazzolis";
+	g_vidinfo[i]['client'] =  "Fazzolis";
+	g_vidinfo[i]['director'] =  ' Clay Peres';
+	g_vidinfo[i]['production'] =  'Lankford Films';
+	g_vidinfo[i]['agency'] =  'Meridian Communications ';
+	g_vidinfo[i]['image'] = 'FLF Classic Sampler-moped-couple-120X90.jpg';
+	g_vidinfo[i]['filename'] = '08 FLF New Classic-82109.flv';
+	
+	i++;
+	g_vidinfo[i] = {};
+	g_vidinfo[i]['name'] = 'Desert Schools';
+	g_vidinfo[i]['client'] =  'Desert Schools Federal Credit Union';
+	g_vidinfo[i]['director'] =  'Will Hartman';
+	g_vidinfo[i]['production'] =  'Will Hartman';
+	g_vidinfo[i]['agency'] =  'MMA advertising';
+	g_vidinfo[i]['image'] = 'Justin & Kelly_HD-DogBottle-120X90.jpg';
+	g_vidinfo[i]['filename'] = '010 JustinKelly-82109.flv';
+	
+	i++;
+	g_vidinfo[i] = {};
+	g_vidinfo[i]['name'] = 'Ak Chin';
+	g_vidinfo[i]['client'] =  'Ak-Chin';
+	g_vidinfo[i]['director'] =  'Cary Hunter Cook';
+	g_vidinfo[i]['production'] =  'VuWest';
+	g_vidinfo[i]['agency'] =  'Sassaman & Bateman';
+	g_vidinfo[i]['image'] = 'Ak Chin-Norm-120X90.jpg';
+	g_vidinfo[i]['filename'] = 'Ak Chin-82009.flv';
+	
+	i++;
+	g_vidinfo[i] = {};
+	g_vidinfo[i]['name'] = 'Proposition 200';
+	g_vidinfo[i]['client'] =  'Prop 200';
+	g_vidinfo[i]['director'] =  'Cary Cook';
+	g_vidinfo[i]['production'] =  'Airwave';
+	g_vidinfo[i]['agency'] =  'R&R Partners';
+	g_vidinfo[i]['image'] = 'Prop200_JustTheFacts-120X90.jpg';
+	g_vidinfo[i]['filename'] = '013 Prop200-Just the facts-82009.flv';
+	
+	i++;
+	g_vidinfo[i] = {};
+	g_vidinfo[i]['name'] = "Fazolis";
+	g_vidinfo[i]['client'] =  "Fazolis";
+	g_vidinfo[i]['director'] =  'Clay Peres';
+	g_vidinfo[i]['production'] =  'Lankford Films';
+	g_vidinfo[i]['agency'] =  'Meridian Communications';
+	g_vidinfo[i]['image'] = 'FLF Pizzettis-3teens-120X90.jpg';
+	g_vidinfo[i]['filename'] = '09 FLF Pizzettis-2-82109.flv';
+	
+	i++;
+	g_vidinfo[i] = {};
+	g_vidinfo[i]['name'] = 'M&I Bank';
+	g_vidinfo[i]['client'] =  'M&I Bank';
+	g_vidinfo[i]['director'] =  'Steve Farr';
+	g_vidinfo[i]['production'] =  'Purple Union';
+	g_vidinfo[i]['agency'] =  'M&I';
+	g_vidinfo[i]['image'] = 'M&I-82109-katieCU-120X90.jpg';
+	g_vidinfo[i]['filename'] = '012 MI-82109.flv';
+	
+	i++;
+	g_vidinfo[i] = {};
+	g_vidinfo[i]['name'] = 'Desert Schools';
+	g_vidinfo[i]['client'] =  'Desert Schools';
+	g_vidinfo[i]['director'] =  'Will Hartman';
+	g_vidinfo[i]['production'] =  'MMA Production';
+	g_vidinfo[i]['agency'] =  'MMA Advertising';
+	g_vidinfo[i]['image'] = 'Lance-120X90.jpg';
+	g_vidinfo[i]['filename'] = '011 Lance-82109.flv';
+	
+	i++;
+	g_vidinfo[i] = {};
+	g_vidinfo[i]['name'] = 'Tchaikovsky';
+	g_vidinfo[i]['client'] =  'Aeon & AscII CD';
+	g_vidinfo[i]['director'] =  'Gary Hunter Cook';
+	g_vidinfo[i]['production'] =  'VuWest';
+	g_vidinfo[i]['agency'] =  'Dentsu Japan';
+	g_vidinfo[i]['image'] = 'Tchaikovsky-CD-82009-3guys3-120X90.jpg';
+	g_vidinfo[i]['filename'] = '016 Tchaikovsky-CD-82009.flv';
+	
+	i++;
+	g_vidinfo[i] = {};
+	g_vidinfo[i]['name'] = 'The Address';
+	g_vidinfo[i]['client'] =  'Address';
+	g_vidinfo[i]['director'] =  'Gerald George';
+	g_vidinfo[i]['production'] =  'VuWest, Inc.';
+	g_vidinfo[i]['agency'] =  'The George Partnership';
+	g_vidinfo[i]['image'] = 'The_Address4X3-12090.jpg';
+	g_vidinfo[i]['filename'] = '017 The_Address.flv';
+	
+	i++;
+	g_vidinfo[i] = {};
+	g_vidinfo[i]['name'] = 'Powerpuff';
+	g_vidinfo[i]['client'] =  'Powerpuff Girls';
+	g_vidinfo[i]['director'] =  'Jake Hausworth';
+	g_vidinfo[i]['production'] =  'VuWest, Inc.';
+	g_vidinfo[i]['agency'] =  'Cartoon Network';
+	g_vidinfo[i]['image'] = 'PowerPuffGirls-opening-120X90.jpg';
+	g_vidinfo[i]['filename'] = '03 PowerPuffGirls-82109.flv';
+
+	
+	for (i=0; i < g_vidinfo.length; i++)
+	{
+		for (j=0; j < g_vids.length; j++)
+		{
+			if (g_vids[j].filename == g_vidinfo[i]['filename'])
+			{
+				
+				console.log("name " + g_vids[j].filename);
+				$('#video_name').val(g_vidinfo[i]['name']);
+				$('#video_client').val(g_vidinfo[i]['client']);
+				$('#video_director').val(g_vidinfo[i]['director']);
+				$('#video_production').val(g_vidinfo[i]['production']);
+				$('#video_agency').val(g_vidinfo[i]['agency']);
+				$('#video_image').val(g_vidinfo[i]['image']);
+		
+				SaveVidInfo(j);
+				
+				break;
+			}
+		}
+	}
+}
+  
+function DemoSaveInfo()
+{
+	var i = g_count;
+	
+	for (j=0; j < g_vids.length; j++)
+	{
+		if (g_vids[j].filename == g_vidinfo[i]['filename'])
+		{
+			
+			console.log("name " + g_vids[j].filename);
+			$('#video_name').val(g_vidinfo[i]['name']);
+			$('#video_client').val(g_vidinfo[i]['client']);
+			$('#video_director').val(g_vidinfo[i]['director']);
+			$('#video_production').val(g_vidinfo[i]['production']);
+			$('#video_agency').val(g_vidinfo[i]['agency']);
+			$('#video_image').val(g_vidinfo[i]['image']);
+	
+			SaveVidInfo(j);
+			
+			break;
+		}
+	}
+	
+	g_count++;
+	
+	if (g_count == g_vidinfo.length)
+		clearInterval(g_intvl);
+}
   
 $(document).ready(function() 
 {
+	//!!
+	//SetDemoVidInfo();
+	//SetDemoCatInfo();
+	//g_intvl = setInterval(function(){DemoSaveInfo()},1000);
+		
 	$("#tabs").tabs();
-	
+
 	//initialize video player
-	//g_video1 = _V_("video_player", { "controls": true, "autoplay": false, "preload": "auto" });
+	g_video = _V_("video_player", { "controls": true, "autoplay": false, "preload": "auto" });	
 	
-	GetSessionData();
+	//GetSessionData();
 
 	$('.cat_video_list').css('list-style-type', 'circle');
 	
@@ -187,23 +415,24 @@ $(document).ready(function()
 	$('#cat_circle').hide();
 	
 	SelectCategory(0);
+	SelectVideo(0);
 	
+
 	//click on video in main video list
 	$('#video_list1 li').live('click', function() { 
 
-		SelectVideo($(this).index());
-
-		g_sel_vid['indx'] = $(this).index();
-		g_sel_vid['name'] = g_vids[$(this).index()]['filename'];
-
-		SetVideoFields(g_sel_vid['indx']);
+		var indx = $(this).index();
 		
+		SelectVideo(indx);
 		
-				
-		//!!allow other types (look at file extension)
-		//g_video1.pause();
-		//$('.vjs-poster').attr("src","images/Coca-Cola-belly-120X90.jpg");
-		//$('.vjs-poster').show();
+	});
+
+	$('#video_image').change(function() {
+		
+		g_video.pause();
+		$('.vjs-poster').attr("src", "uploads/" + $('#video_image').val());
+		$('.vjs-poster').show();
+		
 	});
 
 	$('#del_video').click(function() 
@@ -223,13 +452,9 @@ $(document).ready(function()
 	//click on video in a category
 	$('.cat_video_list li').live('click', function(e) 
 	{ 
-		g_sel_cat_vid['indx'] = $(this).index();
-		g_sel_cat_vid['name'] = $(this).html();
-		console.log("cat vid " + g_sel_cat_vid['indx'] + "name " + g_sel_cat_vid['name']);
-		//console.log("click " + $(this).find('ul').html());
-
+		var name = $(this).html();
+		
 		SelectCatVideo(g_sel_cat['indx'], $(this).index());
-
 	});
 	
 	$('#upload_button').click(function() 
@@ -284,23 +509,19 @@ else
 
 	$('#del_cat').click(function() 
    { 
-		//!! mouse over pop up input box??
-		//console.log("lllllllllllllll");
 		DeleteCategory(g_sel_cat['indx'], g_sel_cat['name']);
 		
    });
    
 	$('#del_cat_video').click(function() 
    { 
-		//!! mouse over pop up input box??
-		//console.log("jjjjjjjjj");
 		DelCatVideo(g_sel_cat, g_sel_cat_vid);
 		
    });
    
 	var bar = $('.bar');
 	var percent = $('.percent');
-	var status = $('#status');
+	//var status = $('#status');
    
 	$('#form_video_upload').ajaxForm({
 		
@@ -308,12 +529,17 @@ else
 		dataType: 'json', 
 		//!! disable submit button
 		beforeSend: function() {
-			status.empty();
+			
+			//cancel file upload
+			//!!cancelBtn.click(xhr.abort);
+			
+			//status.empty();
 			bar.css({'backgroundColor':'white', 'visibility':'visible'});
-			percent.css({'visibility':'visible'});
+			percent.css({'visibility':'visible', 'width':'400px'});
 			var percentVal = '0%';
 			bar.width(percentVal);
 			percent.html(percentVal);
+			bar.show();
 		},
 		uploadProgress: function(event, position, total, percentComplete) {
 			var percentVal = percentComplete + '%';
@@ -322,10 +548,12 @@ else
 		},
 		error: function(request, status, error) {
             console.log(request.responseText);  
+			//status.html(request.responseText);
 			var max = (g_max_upload < g_max_post) ? g_max_upload : g_max_post;
-			percent.html("");
+			percent.html("error: total max upload size possibly exceeded. Choose fewer files.");
+			bar.hide();
 			//bar.html("error uploading, total max upload size is " + max + "M bytes");
-			bar.html("error: total max upload size possibly exceeded");
+			//bar.html("error: total max upload size possibly exceeded. Choose fewer files.");
 
 		},
 		complete: function(data) {
@@ -378,223 +606,8 @@ else
 			}
 		}
 	});
-	
-	//!! UT  --------------------------------------
-    $("#btn3").click(function () 
-	{
-		
-		
-		
-		
-		//$('.cat_video_list li:eq('+g_sel_cat["indx"]+')').show();
-		
-		//$('.cat_video_list:eq(7)').show();
-		
-		//g_count[0] = 0;
-		//g_intvl[0] = setInterval(function(){UTSetVid()},1000);
-	});
-	
-    $("#btn9").click(function () 
-	{
-		g_count[1] = 0;
-		g_intvl[1] = setInterval(function(){UTSetVidInfo()},1000);
-	});
-	
-
-  	$("#btn4").click(function () 
-	{
-		UTDeleteVid();
-		//clearInterval(g_intvl[0]);
-		//g_intvl[0] = setInterval(function(){UTDeleteVid()},10);
-	});
-	
-    $("#btn5").click(function () 
-	{
-		 g_count2 = 0;
-		UTCreateCat();
-		
-	});
-	
-    $("#btn6").click(function () 
-	{
-		 
-		UTDeleteCat();
-		
-	});
-
-    $("#btn7").click(function () 
-	{
-		 g_count3 = 0;
-		 g_count4 = 0;
-		UTCreateCatVid();
-		
-	});
-
-    $("#btn8").click(function () 
-	{	
-		
-	});
-	
 });
 
-function UTCreateCatVid()
-{
-
-	console.log("count3 " + g_count3 + " count4 " + g_count4 + " vids name " + g_vids[0].filename);
-	
-
-	if (g_count4 == g_vids.length)
-	{
-		g_count4 = 0;
-		g_count3++;
-	}
-	
-	if (g_count3 == g_cats.length)
-		return
-	
-		g_sel_cat['indx'] = g_count3;
-		g_sel_cat['name'] = g_cats[g_count3].name;
-		g_sel_vid['indx'] = g_count4;
-		g_sel_vid['name'] = g_vids[g_count4].filename;
-	
-		AddCatVideo(g_sel_cat, g_sel_vid);
-		
-		g_count4++;
-}
-
-function UTCreateCat()
-{
-	console.log("count " + g_count2);
-	
-	if (g_count2 > 1)
-		return;
-
-		var name = "cat " + g_count2;
-	
-		CreateCategory(name);
-}
-
-function UTDeleteCat()
-{
-	var len = g_cats.length;
-	
-	//for (i=0; i < g_vids.length; i++)
-	//{
-		g_sel_cat['indx'] = 0;
-		g_sel_cat['name'] = g_cats[0]['name'];
-		
-		console.log("cat " + g_sel_cat['name']);
-		DeleteCategory(g_sel_cat['indx'], g_sel_cat['name']);
-}
-
-function UTSetVid()
-{
-	var num = 2;
-	
-	if (g_count[0] > g_vids.length)
-	{
-		return;
-	}
-	
-	if (g_count[0])
-	{
-		if (g_count[0] == g_vids.length)
-		{
-			console.log("count " + g_count[0]);
-			
-			var i = g_count[0]-1;
-		
-			document.getElementById('video_name').value = "video " + i;
-			document.getElementById('video_client').value = "client " + i;
-			document.getElementById('video_director').value = "director " + i;
-			document.getElementById('video_production').value = "production " + i;
-			document.getElementById('video_agency').value = "agency " + i;
-			
-			SaveVidInfo(g_count[0]-1);
-		}
-	}
-	
-	if (g_vids.length == num)
-	{
-		clearInterval(g_intvl[0]);
-		return;
-	}
-	
-	g_count[0] = g_vids.length + 1;
-	
-	var filename = "video " + g_vids.length + ".flv";
-	
-	AddVideo(filename);
-}
-
-function UTSetVidInfo()
-{
-	if (g_vids.length == g_count[1])
-	{
-		clearInterval(g_intvl[1]);
-		return;
-	}
-	
-	if (document.getElementById('video_name').value.indexOf('video') === -1) 
-	{
-		return;
-	}
-	
-	var i = g_count[1];
-	
-		document.getElementById('video_name').value = "video " + i;
-		document.getElementById('video_client').value = "client " + i;
-		document.getElementById('video_director').value = "director " + i;
-		document.getElementById('video_production').value = "production " + i;
-		document.getElementById('video_agency').value = "agency " + i;
-		
-		var filename = "video " + i + ".flv";
-
-		g_count[1]++;
-
-		SaveVidInfo(g_count[1]-1);
-}
-
-function UTDeleteVid()
-{
-	var len = g_vids.length;
-	
-	//for (i=0; i < g_vids.length; i++)
-	//{
-		g_sel_vid['indx'] = 0;
-		g_sel_vid['name'] = g_vids[0]['filename'];
-		
-		console.log("vid " + g_sel_vid['name']);
-		DeleteVideo(g_sel_vid['indx'], g_sel_vid['name']);
-	//}
-}
-
-function SelectCategory(indx)
-{	
-	$('.cat_name').blur();
-	$('.cat_name').css('cursor', 'pointer');
-	
-	$('.cat_video_list').hide(1);
-	
-	$('#cats_list ul:eq('+indx+')').show("slow", "swing", function() {
-
-		//!! get rid of #cats_list li
-		var pos = $('#cats_list li .cat_name:eq('+indx+')').position();
-	
-			$('#cat_circle').animate({
-				top: pos.top+27,
-				left: pos.left+25,
-			}, function() {
-				//$('.cat_name:eq('+indx+')').css('cursor', 'text');
-				$('#cat_circle').show();
-			});
-			
-			
-  });
-	
-	g_sel_cat['indx'] = indx;
-	g_sel_cat['name'] = $('.cat_name:eq('+indx+')').val();
-}
 
 function AddImage(filename)
 {
@@ -624,6 +637,8 @@ function AddVideo(filename)
 				g_vids[g_vids.length] = {};
 				g_vids[g_vids.length-1].name = "unset";
 				g_vids[g_vids.length-1].filename = filename;
+				
+				SelectVideo(g_vids.length-1);
 			}
 		} 
     });
@@ -646,12 +661,13 @@ function DeleteVideo(indx, name)
 				
 				//remove from html cats list
 				for (i=0; i < $('#cats_list ul').length; i++)
-				{
-					for (j=0; j < $('.cat_video_list:eq('+j+') li').length; j++)
+				{					
+					for (j=0; j < $('.cat_video_list:eq('+i+') li').length; j++)
 					{
 						if ($('.cat_video_list:eq('+i+') li:eq('+j+')').text() == name)
 						{
 							$('.cat_video_list:eq('+i+') li:eq('+j+')').remove();
+
 							break;
 						}
 					}	
@@ -659,6 +675,8 @@ function DeleteVideo(indx, name)
 				
 				//remove object 
 				g_vids.splice(indx, 1);
+								
+				SelectVideo(indx-1);
 			}
 		} 
     });
@@ -720,19 +738,88 @@ function setinfo()
   
 function SelectVideo(indx)
 {
+	if (g_vids.length == 0)
+	{
+		g_sel_vid['indx'] = -1;
+		SetVideoFields(-1);
+		return;
+	}
+	
+	//account for index 0 video deleted
+	if (indx == -1)
+		indx = 0;
+	
+	g_sel_vid['indx'] = indx;
+	g_sel_vid['name'] = g_vids[indx]['filename'];
+		
 	$('#video_list1 li').removeClass('shadow2').addClass('shadow1');
 	$('#video_list1 li:eq('+indx+')').addClass('shadow2');
+	
+	SetVideoFields(indx);
+	
+	g_video.pause();
+	$('.vjs-poster').attr("src", "uploads/" + g_vids[indx]['image']);
+	$('.vjs-poster').show();
+		
+	g_video.src({ type: "video/flv", src: "uploads/" + g_vids[indx].filename });
+	
+}
+
+function SelectCategory(indx)
+{	
+	//category list is empty
+	if (g_cats.length == 0)
+	{
+		g_sel_cat['indx'] = -1;
+		return;
+	}
+		
+	$('.cat_name').blur();
+	$('.cat_name').css('cursor', 'pointer');
+	
+	$('.cat_video_list').hide(1);
+	
+	$('#cats_list ul:eq('+indx+')').show("slow", "swing", function() {
+
+		//!! get rid of #cats_list li
+		var pos = $('#cats_list li .cat_name:eq('+indx+')').position();
+	
+		$('#cat_circle').animate({
+			top: pos.top+27,
+			left: pos.left+25,
+		}, function() {
+			//$('.cat_name:eq('+indx+')').css('cursor', 'text');
+			$('#cat_circle').show();
+		});
+  });
+	
+	g_sel_cat['indx'] = indx;
+	g_sel_cat['name'] = $('.cat_name:eq('+indx+')').val();
+	
+	SelectCatVideo(indx, 0);
 }
 
 function SelectCatVideo(catindx, vidindx)
 {
+	var len = $('.cat_video_list:eq('+catindx+')').length;
+	
+	if (len == 0)
+	{
+		g_sel_cat_vid['indx'] = -1;
+		return;
+	}
+		
+	g_sel_cat_vid['indx'] = vidindx;
+	g_sel_cat_vid['name'] = $('.cat_video_list:eq('+catindx+') li:eq('+vidindx+')').text();
+
 	$('.cat_video_list li').removeClass('shadow2')
 	$('.cat_video_list:eq('+catindx+') li:eq('+vidindx+')').addClass('shadow2');
 }
 
 function SetVideoFields(indx)
 {
-	if (g_vids[indx].name == 'unset') 
+	//if video list empty or new video just added
+	if ((g_sel_vid['indx'] == -1) || (g_vids[indx].name == 'unset')) 
 	{
 		$('.vid_info_input').val("");
 		return;
@@ -748,6 +835,8 @@ function SetVideoFields(indx)
 
 function SaveVidInfo(indx)
 {
+	console.log("vid indx " + indx);
+	
 	var filename = g_vids[indx]['filename'];
 	
 	var name = document.getElementById('video_name').value;
@@ -758,11 +847,11 @@ function SaveVidInfo(indx)
 	var img = document.getElementById('video_image').value;
 	
     $.ajax({     
-		type: "GET",
+		type: "POST",
 		url: 'util_op.php',                  
-		data: "jquery_op=savevideodata&filename=" + filename + "&name=" + name + 
-			  "&client=" + cli +	"&director=" + dir + "&production=" + 
-			   prod + "&agency=" + ag + "&image=" + img,
+		data: {jquery_op:'savevideodata', filename:filename, name:name, 
+			   client:cli, director:dir, production:prod, 
+			   agency:ag, image:img},
 		dataType: 'json',	 
 		
 		success: function(result)          
@@ -777,7 +866,7 @@ function SaveVidInfo(indx)
 				g_vids[indx]['image'] = img;
 				
 				//update video list name
-				$('#video_list1 > li span.vid_name:eq('+indx+')').text(" " + name);
+				$('#video_list1 > li span.vid_name:eq('+indx+')').val(" " + name);
 			}
 		} 
     });
@@ -830,7 +919,7 @@ function DeleteCategory(indx, name)
 				//remove from array
 				g_cats.splice(indx, 1);
 				
-				SelectCategory(g_cats.length - 1);
+				SelectCategory(indx - 1);
 			}
 		} 
     });
@@ -878,10 +967,11 @@ function AddCatVideo(sel_cat, sel_vid)
 			{
 				//dynamic add video to html 
 				$('#cats_list > li').eq(sel_cat['indx']).find('ul').append("<li>" + sel_vid['name'] + "</li>");
-				
-				console.log("sel cat " + sel_cat["indx"]);
-				
+								
 				$('.cat_video_list:eq('+sel_cat['indx']+')').show();
+				
+				vid_indx = $('.cat_video_list:eq('+sel_cat['indx']+') li').length - 1;
+				SelectCatVideo(sel_cat['indx'], vid_indx);
 			}
 		} 
     }); 
@@ -903,7 +993,13 @@ function DelCatVideo(sel_cat, sel_vid)
 				//!! also works
 				//$('#cats_list > li').eq(4).find('ul').find('li').eq(1).remove();
 				$('#cats_list > li:eq('+sel_cat["indx"]+') ul li:eq('+sel_vid["indx"]+')').remove();
+				
+				//$('.cat_name:eq('+indx+')')
+				
+				SelectCatVideo(sel_cat['indx'], sel_vid['indx']-1);
 			}
+			
+			
 		} 
     }); 
 }
@@ -941,7 +1037,7 @@ function DelCatVideo(sel_cat, sel_vid)
 		<!-- file upload -->
 		<div id="video_upload_div">
 		<form action="util_op.php" method="POST" enctype="multipart/form-data" id="form_video_upload">
-		<div id="upload_button" ><span>Upload Videos/Photos</span></div>
+		<div id="upload_button" ><span>Upload Videos/Images</span></div>
 		<div style='height: 0px;width:0px; overflow:hidden;'>
 		<input id="upfile" type="file" value="upload" name="videos[]" multiple />
 		</div>
@@ -954,36 +1050,18 @@ function DelCatVideo(sel_cat, sel_vid)
 		</div>
 		
 		</div>
+					
+		<div id="video_player_util_div">
+			<video id="video_player" class="video-js vjs-default-skin" width="300" height="200" ></video>
+		</div>
 
-		
-		
-		
-		<!--
-		<div id="video_upload_div">
-		<form action="util_op.php" method="post" enctype="multipart/form-data" id="form_video_upload">
-			<input type="file" name="videos[]" id="video_upload" multiple>
-			<input type="submit" value="upload" id="video_upload_button">
-		</form>
-				
-			<input type="submit" value="upload" id="video_upload_button">
-		
-			<div class="bar"></div >
-			<div class="percent">0%</div >
-		</div>
-		-->
-	
-	<!--
-		<div class="progress">
-			<div class="bar"></div >
-			<div class="percent">0%</div >
-		</div>
-		-->
-		<div id="status"></div>
+
+		<!--<div id="status"></div>-->
 
 		<div id="videos_div">
 			<div id="video_list1_div">
 				<span class="video_name_hdr">Name</span><span class="video_file_hdr">File</span>
-				<div id="del_video_div"><span>Delete</span><span id="del_video"> Video</span></div>
+				<div id="del_video_div"><span id="del_video">Delete Video</span></div>
 				<ul id="video_list1">
 					
 					<?php
@@ -996,7 +1074,8 @@ function DelCatVideo(sel_cat, sel_vid)
 					?>
 				</ul>
 			</div>
-        </div>
+
+		</div>
 			
 		<div id="video_info_div">
 			<span id="save_vid_info">Save</span><br>
@@ -1020,10 +1099,6 @@ function DelCatVideo(sel_cat, sel_vid)
 					}
 				?>	
 			</select>
-			<!--  use hide/show to replace select and hide drop arrow
-			<label for="video_image_input">Agency:</label>
-			<input type="text" id="video_image_input" class="vid_info_input" name="video_image_input" ><br>			
-			-->
 				
 		</div>
 

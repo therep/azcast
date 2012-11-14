@@ -294,16 +294,16 @@ function UpdateImages(cat)
 	//$('#slider li').fadeOut('slow');
 	$('#slider li').hide();
 	$('#slider li img')
-		.attr("src","")
-		.attr("alt","");
+		.attr("src","");
+		//.attr("alt","");
 	
 	for (var i=0; i < g_vidcatarray[cat].length; i++)
 	{
-		console.log("found " + g_vidcatarray[cat][i]['image']);
 		$('#first ul li:eq('+i+') img')
 				.attr("src","uploads/" + g_vidcatarray[cat][i]['image'])
-				.attr("class", "video_image");
-					
+				.attr("class", "video_image")
+				.attr("alt", g_vidcatarray[cat][i]['name']);
+				
 		
 		//$('#first ul li:eq('+i+') a img').attr("alt","images/" + g_vidcatarray[cat][i]);
 	}
